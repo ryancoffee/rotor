@@ -1,0 +1,29 @@
+CC=g++
+CFLAGS=-Wall -I/usr/local/include -I$(HOME)/computing/boost -c -DHAVE_INLINE -fopenmp
+LDFLAGS=-L/usr/local/lib -lgsl -lgslcblas -lm -fopenmp
+EXECUTABLE=rotor
+IDIR=./include
+ODIR=./obj
+SDIR=./src
+HEADERS=$(IDIR)/*.hpp 
+SOURCES=$(SDIR)/*.cpp
+OBJECTS=$(SOURCES:.cpp=.o)
+
+all: $(SOURCES) $(EXECUTABLE)
+	
+$(EXECUTABLE): $(HEADERS) $(SOURCES) $(HEADERS)
+	$(CC) $(CFLAGS) $(LDFLAGS) $(OBJECTS) -o $@
+
+%.o: %.cpp $(DEPS)
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ 
+
+$(OBJECTS): $(HEADERS) $(SOURCES)
+	$(CC) $(CFLAGS) $(LDFLAGS) -c $^
+
+rotor.o: $(HEADERS) rotor.*pp
+	$(CC) $(CFLAGS) $(LDFLAGS) -c rotor.cpp
+
+.PHONY: clean
+clean:
+	rm $(OBJECTS) $(EXECUTABLE)
+

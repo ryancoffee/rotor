@@ -1,0 +1,48 @@
+CC=g++
+CFLAGS=-Wall -I/usr/local/include -I$(HOME)/computing/boost -std=gnu++14 -c -DHAVE_INLINE -O3 -fopenmp
+LDFLAGS=-L/usr/local/lib -lgsl -lgslcblas -lm -fopenmp
+
+
+
+EXECUTABLE=run_rotor
+SDIR=./src
+IDIR=./include
+ODIR=./objdir
+
+vpath %.hpp $(SDIR)
+vpath %.o $(ODIR)
+vpath %.cpp $(SDIR)
+
+DEPS := $(wildcard $(IDIR)/*.hpp)
+SRCS := $(wildcard $(SDIR)/*.cpp)
+
+_OBJS := $(patsubst %.cpp,%.o,$(wildcard src/*.cpp))
+OBJS := $(patsubst src/%,$(ODIR)/%,$(_OBJS))
+
+print-%  : ; @echo $* = $($*)
+
+$(ODIR)/%.o : $(SDIR)/%.cpp $(DEPS)
+	$(CC) $(CFLAGS) $(OBJS) $(LDFLAGS) -o $<
+
+$(OBJS): | $(ODIR)
+
+$(ODIR):
+	mkdir $(ODIR)
+
+
+all: $(OBJS) #$(EXECUTABLE)
+
+$(EXECUTABLE): $(OBJS) $(DEPS)
+	$(CC) $(CFLAGS) $(OBJS) $(LDFLAGS) -o $@
+
+$(OBJS): $(DEPS) $(SRCS)
+	$(CC) $(CFLAGS) $(LDFLAGS)  
+
+.PHONY: clean
+
+clean:
+	rm -f $(OBJS) $(EXECUTABLE)
+
+
+# DO NOT DELETE
+
