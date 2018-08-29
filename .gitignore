@@ -1,2 +1,8 @@
 *.dat
 *.o
+bazel-bin*
+bazel-genfile*
+bazel-out*
+bazel-rotor*
+*.swp
+bazel-testlogs*
