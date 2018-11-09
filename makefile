@@ -1,36 +1,33 @@
 CC=g++
-CFLAGS=-Wall -I/usr/local/include -I$(HOME)/computing/boost -I./include -I$(HOME)/cpp/include -std=gnu++11 -DHAVE_INLINE -O3 -fopenmp
-LDFLAGS=-L/usr/local/lib -lgsl -lgslcblas -lm -fopenmp
+BOOSTROOT=/opt/boost/include
+CFLAGS=-Wall -I/usr/local/include -I$(BOOSTROOT) -I$(IDIR) -std=gnu++14 -c -D_USE_MATH_DEFINES -O3 -fopenmp
+LDFLAGS=-L/usr/local/lib -lfftw3 -lm -fopenmp
 
-EXECUTABLE=run_rotor
 SDIR=./src
 IDIR=./include
-ODIR=./objdir
+ODIR=./objects
+_SRCS=Ensemble.cpp  Molecules.cpp  Propagators.cpp  PulseFreq.cpp    PulseTime.cpp  jEnsemble.cpp  vEnsemble.cpp rotormain.cpp
+_HEADS=Propagator.hpp   Propagators.hpp  PulseFreq.hpp  PulseTime.hpp  jEnsemble.hpp  vEnsemble.hpp  Constants.hpp  Ensemble.hpp  Molecules.hpp  rotormain.hpp
 
-vpath %.hpp $(IDIR)
-vpath %.o $(ODIR)
-vpath %.cpp $(SDIR)
+OBJECTS=$(patsubst %,$(ODIR)/%,$(_SRCS:.cpp=.o))
+HEADERS=$(patsubst %,$(IDIR)/%,$(_HEADS))
+SOURCES=$(patsubst %,$(SDIR)/%,$(_SRCS))
+EXECUTABLE ?= rotormain
 
-DEPS := $(wildcard $(IDIR)/*.hpp)
-SRCS := $(wildcard $(SDIR)/*.cpp)
-_OBJS := $(patsubst %.cpp,%.o,$(wildcard $(SDIR)/*.cpp))
-OBJS := $(patsubst $(SDIR)/%,$(ODIR)/%,$(_OBJS))
+all: $(SOURCES) $(EXECUTABLE)
+        
+$(EXECUTABLE): $(OBJECTS)
+        $(CC) $(OBJECTS) $(LDFLAGS) -o $@
 
-print-%  : ; @echo $* = $($*)
-
-$(ODIR)/%.o : $(SDIR)/%.cpp $(DEPS)
-	$(CC) -o $@ $(CFLAGS) $(LDFLAGS) -c $<
-
-$(OBJS): | $(ODIR)
-
-$(ODIR):
-	mkdir $(ODIR)
+$(ODIR)/%.o: $(SDIR)/%.cpp $(HEADERS)
+        $(CC) $(CFLAGS) -c $< -o $@ 
 
 .PHONY: clean
 
 clean:
-	rm -f $(OBJS) $(EXECUTABLE)
-
+        rm $(ODIR)/*.o $(EXECUTABLE)
 
 # DO NOT DELETE
+
+
 
