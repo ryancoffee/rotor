@@ -17,15 +17,15 @@ EXECUTABLE ?= rotormain
 all: $(SOURCES) $(EXECUTABLE)
         
 $(EXECUTABLE): $(OBJECTS)
-        $(CC) $(OBJECTS) $(LDFLAGS) -o $@
+	$(CC) $(OBJECTS) $(LDFLAGS) -o $@
 
 $(ODIR)/%.o: $(SDIR)/%.cpp $(HEADERS)
-        $(CC) $(CFLAGS) -c $< -o $@ 
+	$(CC) $(CFLAGS) -c $< -o $@ 
 
 .PHONY: clean
 
 clean:
-        rm $(ODIR)/*.o $(EXECUTABLE)
+	rm $(ODIR)/*.o $(EXECUTABLE)
 
 # DO NOT DELETE
 
