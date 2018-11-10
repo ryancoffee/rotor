@@ -14,6 +14,7 @@
 #include <Constants.hpp>
 
 // my definitions
+class ScanParams;
 
 class PulseTime {
 

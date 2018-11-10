@@ -6,8 +6,10 @@ LDFLAGS=-L/usr/local/lib -lfftw3 -lm -fopenmp
 SDIR=./src
 IDIR=./include
 ODIR=./objects
-_SRCS=Ensemble.cpp  Molecules.cpp  Propagators.cpp  PulseFreq.cpp    PulseTime.cpp  jEnsemble.cpp  vEnsemble.cpp rotormain.cpp
-_HEADS=Propagator.hpp   Propagators.hpp  PulseFreq.hpp  PulseTime.hpp  jEnsemble.hpp  vEnsemble.hpp  Constants.hpp  Ensemble.hpp  Molecules.hpp  rotormain.hpp
+_SRCS=Ensemble.cpp  Molecules.cpp  Propagators.cpp  PulseFreq.cpp PulseTime.cpp  jEnsemble.cpp  vEnsemble.cpp rotormain.cpp
+_HEADS=Constants.hpp DataOps.hpp Propagator.hpp   Propagators.hpp  PulseFreq.hpp  PulseTime.hpp  jEnsemble.hpp  vEnsemble.hpp  Ensemble.hpp  Molecules.hpp  rotormain.hpp
+Constants.hpp  Ensemble.hpp   Propagator.hpp   PulseFreq.hpp  ScanParams.hpp  
+DataOps.hpp Molecules.hpp Propagators.hpp PulseTime.hpp jEnsemble.hpp vEnsemble.hpp rotormain.hpp
 
 OBJECTS=$(patsubst %,$(ODIR)/%,$(_SRCS:.cpp=.o))
 HEADERS=$(patsubst %,$(IDIR)/%,$(_HEADS))

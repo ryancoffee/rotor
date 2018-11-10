@@ -12,7 +12,7 @@
 class Ensemble {
 
 public:
-	Ensemble(const unsigned nstatesin = 50);
+	Ensemble(const unsigned nstatesin);
 	virtual ~Ensemble(void){}
 
 	void setkTinau(const float kTinauin);

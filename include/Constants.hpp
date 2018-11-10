@@ -6,7 +6,6 @@
 #endif
 
 #include <cmath>
-#include <gsl/gsl_const_num.h>
 #include <boost/math/constants/constants.hpp>
 #include <boost/units/systems/si/codata/universal_constants.hpp>
 

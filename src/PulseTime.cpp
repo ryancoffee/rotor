@@ -1,4 +1,4 @@
-// Pulse class implimentation
+// Pulse class implementation
 
 // my headers
 #include "PulseTime.hpp"
