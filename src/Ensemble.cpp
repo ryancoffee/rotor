@@ -8,6 +8,6 @@ Ensemble::Ensemble(unsigned nin = 50)
 
 void Ensemble::setkT(float kTinkelvin)
 {
-	setkTinau(kTinkelvin*kb<float>()/Eh<float>());
+	setkTinau(kTinkelvin*Constants::kb<float>()/Constants::Eh<float>());
 }
 

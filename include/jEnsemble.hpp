@@ -11,20 +11,24 @@
 
 using DataOps::operator<<;
 
-template <typename DType>
+class Molecules;
+
 class jEnsemble {
 
 	friend class Molecules;
 
 public:
 
-        jEnsemble(unsigned njsin,const Molecules::MolID id = Molecules::nno);
-	jEnsemble(unsigned njsin = 50, Molecules & mol);
+	jEnsemble(unsigned njsin,unsigned vin, const float kTinau);
+	jEnsemble(unsigned njsin = 50,unsigned vin = 0,Molecules * mol);
+	~jEnsemble(void);
 
 	void setm(const unsigned m_in){m=m_in;}
 	void setv(const unsigned v_in){v=v_in;}
+	void setmolecule(Molecules & molin){m_moleculePtr = new Molecules(molin);}
 
         inline void printdist(std::ofstream & of) { of << pj;}
+	inline double setpopthresh(double in){m_popthresh = in;return m_popthreash;}
 
 
 private:
@@ -32,27 +36,19 @@ private:
 	unsigned v;
 	int m;
 	unsigned m_njs;
-	Molecules m_molecule;
+	Molecules * m_moleculePtr;
 
-	std::vector<DType> pj;
-	std::vector<DType> ej;
-        std::vector<DType> aajm;
-	std::vector<DType> bbjm;
-	std::vector<DType> ccjm;
+	std::vector<double> pj;
+	std::vector<double> ej;
+        std::vector<double> aajm;
+	std::vector<double> bbjm;
+	std::vector<double> ccjm;
 
 
 protected:
-	const DType m_popthresh(10*std::numeric_limits<DType>::min()); // used in testing for population leaking up past the 10% of end of the vector	
+	double m_popthresh;//(10*std::numeric_limits<double>::min()); // used in testing for population leaking up past the 10% of end of the vector	
 	void checkgrowth(void);
 	void fill6j(const unsigned oldsz = 0);
-	/*
-	template <typename IteratorT, typename FunctionT> FunctionT jEnsemble::fillpop(
-			IteratorT first,
-			IteratorT last,
-			typename std::iterator_traits<IteratorT>::difference_type initial,
-			FunctionT func)
-	*/
-
 };
 
 #endif  

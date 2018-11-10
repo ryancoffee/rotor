@@ -1,10 +1,8 @@
 #include <Molecules.hpp>
-#include <Constants.hpp>
 #include <algorithm>
 
 
-template <typename DType>
-Molecules::Molecules(DType kT = DType(50) * kb<DType>()/Eh<DType>(), MolID id = nno)
+Molecules::Molecules(float kT = float(50) * Constants::kb<float>()/Constants::Eh<float>(), MolID id = nno)
 : m_id(id)
 , m_kT(kT)
 {
