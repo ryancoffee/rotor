@@ -1,17 +1,17 @@
 #ifndef ENSEMBLE_H
 #define ENSEMBLE_H
 
-#include <Constants.hpp> // for kb and Eh
-
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <Molecules>
 
 // base for ensemble classes //
 
 class Ensemble {
 
 public:
+	Ensemble(const unsigned nstatesin,const float kTinkelvinin);
 	Ensemble(const unsigned nstatesin);
 	virtual ~Ensemble(void){}
 
@@ -22,6 +22,7 @@ public:
         float getpop(void);
         virtual void normalize(void);
         virtual void printdist(std::ofstream & of);
+	virtual void setmolecule(Molecules * molPtrin);
 	
 	void checkgrowth(void); // this should be something that checks if the state .95 away from the end has nonzero population, then grow the vector length by 5%
 	virtual double getstateenergy(const unsigned statenum);
@@ -30,10 +31,11 @@ public:
 private:
 	virtual unsigned setenergies(std::string & molstring);
 
-	float kTinau;
-	const unsigned nstates;
-	std::vector<float> pops;
-	std::vector<double> energies;
+	Molecules * m_molPtr;
+	float m_kTinau;
+	unsigned m_nstates;
+	std::vector<double> m_pops;
+	std::vector<double> m_energies;
 };
 
 #endif
