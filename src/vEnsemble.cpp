@@ -2,17 +2,11 @@
 #include <functional>
 
 
-vEnsemble::vEnsemble(unsigned nvibsin,Molecules mol)
+vEnsemble::vEnsemble(unsigned nvibsin,Molecules * molPtrin);
 : m_nvibs(nvibsin)
 {
-	m_molecule = mol;
+	m_molPtr = molPtrin;
 }
-vEnsemble::vEnsemble(unsigned nvibsin,const MolID id = Molecules::nno)
-: m_nvibs(nvibsin)
-{
-	m_molecule = Molecules(id);
-}
-
 vEnsemble::~vEnsemble(void)
 {
 
@@ -31,47 +25,39 @@ void vEnsemble::checkgrowth(void){
 	unsigned newsize;
 	if ( pv[bufferi] > m_pthresh ) {
 		newsize = unsigned(oldsz * (1. + 2.*buffer));
-		pv.resize(newsize,DType(0));
+		pv.resize(newsize,float(0));
 		ev.resize(newsize);
-		m_molecule.fill(*this,oldsz);
+		m_molPtr->fill(*this,oldsz);
 	}
 }
 void vEnsemble::setenergies(void){
-	m_molecule.fill(*this);
+	m_molPtr->fill(*this);
 }
 
-template <typename DType>
-void vEnsemble::molecule(Molecules<DType> & mol)
+void vEnsemble::setmolecule(Molecules * molPtrin)
 {
-	m_molecule = mol;
-}
-template <typename DType>
-unsigned vEnsemble::molecule(MolID & id,DType kTin = DType(1.f/40)*kb()/Eh())
-{
-	m_molecule = Molecules(id,kTin);
+	m_molPtr = molPtrin;
 }
 
-template <typename DType>
-unsigned vEnsemble::limitpops(DType thresh = std::nextafter(DType(0),DType(1)))
+unsigned vEnsemble::limitpops(float thresh = std::nextafter(float(0),float(1)))
 {
 	//std::replace_if(pv.begin(),pv.end(),std::bind1st(std::greater<DType>(),thresh),std::nextafter(DType(0),DType(-1)));
 	//bool abovethresh(DType x){return x>thresh;}
 	//std::vector<DType>::iterator it = std::find_end(pv.begin(),pv.end(),abovethresh);
-	std::vector<DType>::iterator it = std::find_end(pv.begin(),pv.end(),[](DType x,DType thresh){return bool(x>thresh);});
+	std::vector<float>::iterator it = std::find_end(pv.begin(),pv.end(),[](float x,float thresh){return bool(x>thresh);});
 	unsigned newsize = it - pv.begin() + 1;
 	pv.resize(newsize);
 	ev.resize(newsize);
 	return pv.size();
 }
 
-template <typename DType>
 unsigned vEnsemble::initdist(void){
 	setenergies();
 	pv.assign(ev.begin(),ev.end());
-	DType kT = m_molecule.getkT();
-	std::transform(pv.begin(), pv.end(), pv.begin(), [DType & kT](DType x){return std::exp(-x/kT);});
+	float kT = m_molPtr->getkT();
+	std::transform(pv.begin(), pv.end(), pv.begin(), [float & kT](float x){return std::exp(-x/kT);});
 	safe_normalize(pv);
-	limitpops(DType(1e-2));
+	limitpops(float(1e-2));
 	safe_normalize(pv);
 	std::clog << "relevent vib pops = " << pv << std::endl;
 	return pv.size()

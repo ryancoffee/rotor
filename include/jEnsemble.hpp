@@ -15,20 +15,17 @@ class Molecules;
 
 class jEnsemble {
 
-	friend class Molecules;
-
 public:
 
-	jEnsemble(unsigned njsin,unsigned vin, const float kTinau);
-	jEnsemble(unsigned njsin = 50,unsigned vin = 0,Molecules * mol);
+	jEnsemble(unsigned njsin,unsigned vin,Molecules * m_molPtr);
 	~jEnsemble(void);
 
 	void setm(const unsigned m_in){m=m_in;}
 	void setv(const unsigned v_in){v=v_in;}
-	void setmolecule(Molecules & molin){m_moleculePtr = new Molecules(molin);}
+	void setmolecule(Molecules * molPtrin){m_molPtr = molPtrin;}
 
         inline void printdist(std::ofstream & of) { of << pj;}
-	inline double setpopthresh(double in){m_popthresh = in;return m_popthreash;}
+	inline double setpopthresh(double in){m_popthresh = in;return m_popthresh;}
 
 
 private:
@@ -36,7 +33,7 @@ private:
 	unsigned v;
 	int m;
 	unsigned m_njs;
-	Molecules * m_moleculePtr;
+	Molecules * m_molPtr;
 
 	std::vector<double> pj;
 	std::vector<double> ej;

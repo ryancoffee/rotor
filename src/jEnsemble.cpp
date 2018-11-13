@@ -7,24 +7,13 @@ using Constants::kb;
 using Constants::Eh;
 
 
-jEnsemble::jEnsemble(unsigned njsin,unsigned vin, const float kTinau)//,const MolID id = Molecules::nno)
+jEnsemble::jEnsemble(unsigned njsin = 50,unsigned vin = 0,Molecules * molPtrin = nullptr)
 : m_njs(njsin)
 , m_popthresh(10*std::numeric_limits<double>::min())
-, v(vin)
+, m_v(vin)
+, m_molPtr(molPtrin)
 {
-	m_moleculePtr = nullptr; //Molecules(id);
-        ej.resize(njs,double(0));
-        pj.resize(njs,double(0));
-	aajm.resize(njs,double(0));
-	bbjm.resize(njs,double(0));
-	ccjm.resize(njs,double(0));
-}       
-jEnsemble::jEnsemble(unsigned njsin,unsigned vin,Molecules * mol)
-: m_njs(njsin)
-, m_popthresh(10*std::numeric_limits<double>::min())
-, v(vin)
-{
-	m_moleculePtr = new Molecules(*mol);
+	m_molPtr = new Molecules(*mol);
         ej.resize(m_njs,double(0));
         pj.resize(m_njs,double(0));
 	mol.fill(*this);
@@ -34,9 +23,9 @@ jEnsemble::jEnsemble(unsigned njsin,unsigned vin,Molecules * mol)
 }       
 jEnsemble::~jEnsemble(void)
 {
-	if (m_moleculePtr~=nullptr){
-		delete m_moleculePtr;
-		m_moleculePtr = nullptr;
+	if (m_molPtr~=nullptr){
+		delete m_molePtr;
+		m_molPtr = nullptr;
 	}
 }
 
@@ -52,12 +41,12 @@ unsigned jEnsemble::limitpops(double thresh = std::nextafter(double(0),double(1)
 unsigned jEnsemble::initdist(void){
 	setenergies();
 	unsigned j = 0;
-	float kT = m_molecule.getkT();
+	float kT = m_molPtr->getkT();
 	pj.assign(ej.begin(),ej.end());
 	std::transform(pv.begin(), pv.end(), pv.begin(), 
-			[float & kT,unsigned &j,Molecules & m_molecule](float x){
+			[float & kT,unsigned &j,Molecules * m_molPtr](float x){
 			val = (x/kt>float(0.1) ? std::exp(-x/kT) : 1+std::expm1(-x/kT) );
-				val *= m_molecule.multiplicity(j)(2*(j)+1);
+				val *= m_molPtr->multiplicity(j)(2*(j)+1);
 				j++;
 				return val;
 				}

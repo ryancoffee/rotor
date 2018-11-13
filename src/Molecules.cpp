@@ -1,14 +1,18 @@
 #include <Molecules.hpp>
 #include <algorithm>
 
-
 Molecules::Molecules(float kT = float(50) * Constants::kb<float>()/Constants::Eh<float>(), MolID id = nno)
 : m_id(id)
 , m_kT(kT)
 {
 }
 
-std::string & Molecules::getMolID(void)
+Molecules::MolID & Molecules::getMolID(void)
+{
+	return m_id;
+}
+
+std::string & Molecules::getMolIDstring(void)
 {
 	std::string out("MolID_");
 	switch (this->m_id) {
@@ -23,7 +27,7 @@ std::string & Molecules::getMolID(void)
 		case ii:
 			out += "ii";
 		default:
-			out += "";
+			out += "none";
 	}
 	out += "_" + std::to_string(this->m_id);
 	return out;
@@ -52,13 +56,13 @@ bool Molecules::fill(vEnsemble & vens)
 		case oo :
 			// from JOURNAL OF MOLECULAR SPECTROSCOPY 154,372-382 ( 1992) G. ROUILLE "High-Resolution Stimulated Raman Spectroscopy of O2"
 			ens = {1556.38991/2.0, 1556.38991, 1532.86724, 1509.5275};
-			for (unsigned v=1;v<ens.size();++v){ ens[i] += ens[i-1]; }
+			for (unsigned v=1;v<ens.size();++v){ ens[v] += ens[v-1]; }
 
 		case ii :
 			cc = {214.5481, -0.616259, 7.507e-5, -1.263643e-4, 6.198129e-6, -2.0255975e-7, 3.9662824e-9, -4.6346554e-11, 2.9330755e-13, -7.61000e-16};
 			ens.resize(cc.size(),DType(0));
 			for (unsigned v=0;v<ens.size();++v){
-				for(unsigned n=0;n<nterms;n++){
+				for(unsigned n=0;n<cc.size();n++){
 					ens[v] += cc[n] * std::pow(DType(v + 0.5) , int(n + 1));
 				}
 			}
@@ -70,7 +74,7 @@ bool Molecules::fill(vEnsemble & vens)
 
 	if (vens.ev.size() > ens.size()){ vens.ev.resize(ens.size()); }
 	std::copy_n(ens.begin,vens.ev.size(),std::back_inserter(vens.ev));
-	ev /= icmPau<DType>();
+	vens.ev /= Constants::icmPau<DType>();
 	return true;
 }
 
@@ -103,7 +107,7 @@ DType & Molecules::jmultiplicity(const unsigned j)
 */
 
 template <typename DType>
-bool Molecules::fill(jEnsemble & jens,unsigned oldsz)
+bool Molecules::fill(jEnsemble & jens)
 {
 	std::vector<DType> Bv;
 	std::vector<DType> Dv;
@@ -123,10 +127,10 @@ bool Molecules::fill(jEnsemble & jens,unsigned oldsz)
 			v = std::min(Bv.size()-1,jens.v);
 			for (unsigned j=0;j<jens.ej.size();++j){
 				jens.ej[j] = 
-					( Bv[v]*jj*(jj+1)
+					( Bv[v]*j*(j+1)
 					  - Dv[v]*std::pow(j,int(2))*std::pow(j+1,int(2)) 
-					  + Hv[v]*std::pow_3(j,int(3))*std::pow(j+1,int(3))
-					) / icmPau<DType>(); // in atomic units
+					  + Hv[v]*std::pow(j,int(3))*std::pow(j+1,int(3))
+					) / Constants::icmPau<DType>(); // in atomic units
 			}
 
 		case oco:
@@ -138,12 +142,12 @@ bool Molecules::fill(jEnsemble & jens,unsigned oldsz)
 			assert(Bv.size() == Dv.size());
 			assert(Bv.size() == Hv.size());
 			v = std::min(Bv.size()-1,jens.v);
-			for (unsigned i=0;i<paraPtr->sizej;i++){
+			for (unsigned j=0;j<jens.ej.size();j++){
 				jens.ej[j] = 
 					( Bv[v]*j*(j+1)
 					- Dv[v]*std::pow(j,int(2))*std::pow(j+1,int(2)) 
 					+ Hv[v]*std::pow(j,int(3))*std::pow(j+1,int(3))
-					) / icmPau<DType>(); // in atomic units
+					) / Constants::icmPau<DType>(); // in atomic units
 			}
 
 		case nn:
@@ -155,7 +159,7 @@ bool Molecules::fill(jEnsemble & jens,unsigned oldsz)
 				jens.ej[j] = 
 					( Bv[v]*j*(j+1)
 					  - Dv[0]*std::pow(j,int(2))*std::pow(j+1,int(2))
-					) / icmPau<DType>(); // in atomic units
+					) / Constants::icmPau<DType>(); // in atomic units
 			} 
 		case oo:
 			// from JOURNAL OF MOLECULAR SPECTROSCOPY 154,372-382 ( 1992) G. ROUILLE "High-Resolution Stimulated Raman Spectroscopy of O2"
@@ -163,15 +167,15 @@ bool Molecules::fill(jEnsemble & jens,unsigned oldsz)
 			Dv = {4.84256e-6, 4.8418e-6, 4.8410e-6, 4.8402e-6};
 			Hv = {2.8e-12};
 			v = std::min(Dv.size()-1,jens.v);
-			for (unsigned j=0;j<jens.j.size();++j){
-				jens.ej[i] = 
+			for (unsigned j=0;j<jens.ej.size();++j){
+				jens.ej[j] = 
 					( Bv[v]*j*(j+1)
 					- Dv[v]*std::pow(j,int(2))*std::pow(j+1,int(2)) 
 					+ Hv[0]*std::pow(j,int(3))*std::pow(j+1,int(3))
-					) / icmPau<DType>(); // in atomic units
+					) / Constants::icmPau<DType>(); // in atomic units
 			}
 		case ii:
-			B = {	3.7395e-2 
+			Bv = {	3.7395e-2 
 				- 1.2435e-4*(v+0.5) 
 				+ 4.498e-7*std::pow(DType(v)+0.5,int(2)) 
 				- 1.482e-8*std::pow(DType(v)+0.5,int(3)) 
@@ -182,7 +186,7 @@ bool Molecules::fill(jEnsemble & jens,unsigned oldsz)
 				+ 7e-12*std::pow(DType(v)+0.5,int(2))
 			};
 			for (unsigned j=0;j<jens.ej.size();++j){
-				jens.ej[j] = ( Bv[0]*j*(j+1) - Dv[0]*std::pow(j,int(2))*std::pow(j+1,int(2)) ) / icmPau<DType>() ; // in atomic units
+				jens.ej[j] = ( Bv[0]*j*(j+1) - Dv[0]*std::pow(j,int(2))*std::pow(j+1,int(2)) ) / Constants::icmPau<DType>() ; // in atomic units
 			}
 		default:
 			std::cerr << "Failed to choose molecule in Molecules::fill(jEnsemble &... method" << std::endl;

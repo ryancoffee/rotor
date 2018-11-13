@@ -5,31 +5,30 @@
 #include <Ensemble.hpp>
 #include <algorithm>
 #include <Molecules.hpp>
+#include <fstream>
 
 using DataOps::operator<<;
-using Constants::kb;
-using Constants::Eh;
 
-template <typename DType>
+class Molecules;
+
 class vEnsemble {
-	friend bool Molecules;
 
 public:
 
-	vEnsemble(unsigned nvibsin,const MolID id = Molecules::nno);
+	vEnsemble(unsigned nvibsin,Molecules * molPtrin = nullptr);
 	~vEnsemble(void);
-	void setkT(DType kTinauin);
-	void molecule(Molecules & mol);
-	unsigned limitpops(DType thresh = std::nextafter(DType(0),DType(1)));
+	void setkT(float kTinauin);
+	void setmolecule(Molecules * molPtrin);
+	unsigned limitpops(float thresh = std::nextafter(float(0),float(1)));
 	unsigned initdist(void);
 	float getpop(void);
 	void normalize(void);
-	inline void printdist(ofstream & ofPtr) {of << pv;}
+	inline void printdist(std::ofstream & of) {of << pv;}
 
 
-private;
+private:
 
-	Molecules m_mol;
+	Molecules * m_molPtr;
 	
 	unsigned setenergies(std::string & molstring);
 
@@ -37,9 +36,9 @@ private;
 	unsigned maxv;
 
 	float kTinauin;
-	std::vector<DType> pv;
-	std::vector<DType> pvnew;
-	std::vector<DType> ev;
+	std::vector<double> pv;
+	std::vector<double> pvnew;
+	std::vector<double> ev;
 
 };
 
