@@ -2,9 +2,18 @@
 #define PROPAGATORS_H
 
 // --- these classes are for the various coupled and free propagators for the rotor system --- //
+//
+// OK here is the rub.  let's convert to using the boost/numeric/odeint.hpp
+// use the adaptive stepper if we are propagating througha  pulse
+// use the fixed stepper if we are inside of a pulse
+// simple phase accumulation when we are outside of a pulse
+// And it looks like we can indeed use complex numbers easily
+// Using the sandbox to play with the boost odeint stuff
 
 // standard includes
-#include <math.h>
+#include <cmath>
+#include <vector>
+#include <boost/numeric/odeint.hpp>
 
 // gsl includes
 #include <gsl/gsl_const_num.h>
