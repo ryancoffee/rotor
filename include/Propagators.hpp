@@ -24,6 +24,7 @@
 #include <Constants.hpp> // --- conversion constancts lie a0, Eh, icmPau, fsPau etc. --- //
 #include <Rotor.hpp> // --- this is the molecule specifics like ej and pj vectors --- //
 #include <DataOps>
+/*
 #include "Members.hpp" // --- This is the colleciton of member functions ( kickfunc and kickjac for now ) --- //
 #include "FuncJac.hpp" // --- This defines kickfunc and kickjac
 
@@ -37,6 +38,7 @@
 #define LEFT CblasLeft
 #define UPPER CblasUpper
 #define LOWER CblasLower
+*/
 
 using namespace std::complex_literals;
 
@@ -46,7 +48,8 @@ public:
   KickPropagator(Rotor &rotorref);
   ~KickPropagator();
 
-  inline bool apply(double *t,gsl_vector_complex *yinPtr)
+  //inline bool apply(double *t,gsl_vector_complex *yinPtr)
+  inline bool apply(double &t,std::vector< std::complex<double> > &yin)
   {
     //    clog << "kicker.apply(t,dt,yPTr) is in question" << endl;
     bool wasapplied = false;

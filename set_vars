@@ -1,13 +1,16 @@
 #!/bin/bash
 
 starttime=$(date +%s);
-export HOSTNAME=$HOSTNAME:
-export nthreads=1;
-export datadir='./data_fs/rotor/raw';
-mkdir -p $datadir;
+export HOSTNAME=$HOSTNAME
+export datadir='./data_fs/rotor/raw'
+mkdir -p $datadir
+export nthreads=1 #set this to proper multithreading after omp use
 
 export njs=50
-export nvibs=4
+export nvibs=1 #set nvibs to something more like 4 or 5 when finished debugging
 export npulses=8
+export intensity=0.0001
 export scalestrength=1.0
-export pulsewidth=50.0
+export fswidth=50.0
+export fsdelay=39840.0
+export TinKelvin=50

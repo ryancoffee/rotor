@@ -2,7 +2,8 @@
 
 #define ROTORMAIN_H
 
-#include "Propagator.hpp"
+/*
+#include "Propagators.hpp"
 #include "Pulse.hpp"
 
 // Prototyping //
@@ -19,6 +20,7 @@ double sumvec(const int size,const double *vec);
 void print2col(const int sizej, const double *vec1, const double *vec2);
 void print2col(const int sizej, const int *intvec,  const double *doublevec);
 
+*/
 
 
 

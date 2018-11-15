@@ -1,14 +1,14 @@
-#include "rotormain.hpp"
+#include <rotormain.hpp>
 
 // standard includes
 #include <iostream>
 #include <fstream>
-#include <stdio>
-#include <cath>
+#include <cmath>
 #include <ctime>
 #include <string>
 #include <vector>
 
+/*
 // gsl includes
 #include <gsl/gsl_sf_gamma.h>
 #include <gsl/gsl_const_num.h>
@@ -21,44 +21,48 @@
 #include <gsl/gsl_vector.h>
 #include <gsl/gsl_blas.h>
 #include <gsl/gsl_odeiv.h>
+*/
 
 // my headers
 #include <Constants.hpp>
+#include <Molecules.hpp>
+/*
 #include <jEnsemble.hpp>
 #include <vEnsemble.hpp>
-#include <Molecules.hpp>
 #include <Propagator.hpp>
+*/
 
 // my preprocessor defs
 
 int main(int argc, char *argv[]) {
 
-	// getting cmd line args
-	if (argc < 9) {
-		std::cerr << "Syntax is $ main njs T(K) twinstart(ps) tend(ps) tstep (ps) numpulses strength(10^16W/cm^2) decay(>0) width(fs) delay(fs)" << std::endl;
+	// Checking that environment variables have been set
+	if (! (getenv("njs") && getenv("nvibs"))) {
+		std::cerr << "first source set_vars rather than original syntax of \n" 
+		<< "$ main njs T(K) twinstart(ps) tend(ps) tstep (ps) numpulses strength(10^16W/cm^2) decay(>0) width(fs) delay(fs)" << std::endl;
 		std::cerr << "Writes files pj_nn.dat, cossq_nn.dat, field_nn.dat" << std::endl;
 		return 1;
 	}
 
-	using boost::lexical_cast;
 	using namespace Constants;
 
 	// generate filenames //
+	std::string datadir = getenv("datadir");
 	std::string filename;
 	std::string pjstarttail="_";
 	std::string filetail = "_";
-	filetail += argv[2];
+	filetail += getenv("TinKelvin");//argv[2];
 	filetail += "K_";
-	filetail += argv[6];
+	filetail += getenv("npulses"); //argv[6];
 	filetail += "pls_";
-	filetail += argv[7];
+	filetail += getenv("intensity");//argv[7];
 	filetail += "inten_";
-	filetail += argv[9];
+	filetail += getenv("fswidth");//argv[9];
 	filetail += "fswidth_";
-	filetail += argv[10];
+	filetail += getenv("fsdelay");//argv[10];
 	filetail += "fsdelay.dat";
 
-	pjstarttail += argv[2];
+	pjstarttail += getenv("TinKelvin");//argv[2];
 	pjstarttail += "K.dat";
 
 	// Start the clock //
@@ -69,31 +73,29 @@ int main(int argc, char *argv[]) {
 	filename += filetail;
 	std::ofstream logout(filename.c_str(),std::ios::app);
 	if (!logout){
-		std::cerr << "Couldn't append to " << filename << endl;
+		std::cerr << "Couldn't append to " << filename << std::endl;
 		return 1;
 	}
 
 	time(&rawtime);
-	logout << ctime(&rawtime) << " $ " ;
-	for (int i=0;i<argc;i++){
-		logout << argv[i] << " ";
-	}
+	logout << ctime(&rawtime) << " $ here we still need to write the parameters that are now being passed via environment variables" ;
 	logout << std::endl;
 
-	/*
-		OK, now here is where things are likely to get hairy
-		Starting to use oop and so will surely fail for a year.
-	*/
-
-	const double kTinau = boost::lexical_cast<float>(argv[2])*kb<float>()/Eh<float>();
-	Molecules molecule(Molecules::nno,double(kTinau)); // Setting molecule ensemble to nno and temperature to argv[2]*kb/Eh
+	const size_t nthreads((size_t)atoi(getenv("nthreads")));
+	const double kTinau((float)(atof(getenv("TinKelvin")))*kb<float>()/Eh<float>());
+	Molecules molecule(Molecules::nno,double(kTinau)); 
 	std::cout << "The molecules ID is:\t" << molecule.printMolID() << std::endl;
 
-	unsigned nvibs = 4; // set this to reasonable number after debugging
-	vEnsemble vsystem<double>(nvibs,molecule);
+	size_t nvibs((size_t)atoi(getenv("nvibs"))); 
+	std::cerr << "\n\n\t\t\t --- HERE HERE HERE HERE --- \n\n" << std::flush;
+	return 0;
+}
+
+/*
+	vEnsemble vsystem(nvibs,molecule);
 	nvibs = vsystem.initdist();
 
-	size_t njs = boost::lexical_cast<size_t>(argv[1]);
+	const size_t njs(atoi(getenv("njs")));
 	std::vector< jEnsemble<double> > jsystem;
 	jsystem.reserve(nvibs);
 	for (unsigned v=0; v<jsystem.size();++v){
@@ -216,14 +218,12 @@ int main(int argc, char *argv[]) {
 
 
 	// ----- testing the setrealj function vvv
-	/*
-	   params.m=2;
-	   params.jstart=3;
-	   int i=2;
-	   int testj;
-	   setrealj(&testj,&i,&params);
-	   cout << "m=" << params.m << "\tjstart=" << params.jstart << "\ti=" << i << "\t gives:\trealj =" << testj << "\n";
-	 */
+	   //params.m=2;
+	   //params.jstart=3;
+	   //int i=2;
+	   //int testj;
+	   //setrealj(&testj,&i,&params);
+	   //cout << "m=" << params.m << "\tjstart=" << params.jstart << "\ti=" << i << "\t gives:\trealj =" << testj << "\n";
 	// ------ testing setrealj function ^^^
 
 	// ---------- setting up the ODE system ---------- //
@@ -377,7 +377,8 @@ int main(int argc, char *argv[]) {
 
 
 	return 0;
-	}
+}
+*/
 
 
 
@@ -385,7 +386,7 @@ int main(int argc, char *argv[]) {
 
 
 
-
+/*
 
 
 	// ---------- member functions ---------- //
@@ -987,4 +988,4 @@ int main(int argc, char *argv[]) {
 	}
 
 
-
+*/
