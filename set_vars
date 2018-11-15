@@ -1,0 +1,13 @@
+#!/bin/bash
+
+starttime=$(date +%s);
+export HOSTNAME=$HOSTNAME:
+export nthreads=1;
+export datadir='./data_fs/rotor/raw';
+mkdir -p $datadir;
+
+export njs=50
+export nvibs=4
+export npulses=8
+export scalestrength=1.0
+export pulsewidth=50.0

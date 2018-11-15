@@ -1,6 +1,6 @@
-#include <ScanParams.hpp>
+#include <Params.hpp>
 
-ScanParams::ScanParams(void)
+Params::Params(void)
 : dpdelay(double(0))
 , usechirpnoise(false)
 , userandphase(false)
@@ -33,7 +33,7 @@ ScanParams::ScanParams(void)
 
 }
 
-ScanParams::~ScanParams(void)
+Params::~Params(void)
 {
 	delete delays_distributionPtr;
 	delete delays_unidistributionPtr;
@@ -52,7 +52,7 @@ ScanParams::~ScanParams(void)
 
 /* =========== chirp interfaces ============= */
 
-void ScanParams::chirp(double second, double third, double fourth = double(0), double fifth = double(0))
+void Params::chirp(double second, double third, double fourth = double(0), double fifth = double(0))
 {
 	chirpvec[0] = second;
 	chirpvec[1] = third;
@@ -60,7 +60,7 @@ void ScanParams::chirp(double second, double third, double fourth = double(0), d
 	chirpvec[3] = fifth;
 }
 
-void ScanParams::initchirpnoise(double second,double third,double fourth = double(0),double fifth = double(0))
+void Params::initchirpnoise(double second,double third,double fourth = double(0),double fifth = double(0))
 {
 	chirpnoiseDistPtr = new std::normal_distribution<double>( chirpvec[0], second );
 	TODnoiseDistPtr = new std::normal_distribution<double>( chirpvec[1], third );
@@ -68,7 +68,7 @@ void ScanParams::initchirpnoise(double second,double third,double fourth = doubl
 	fifthODnoiseDistPtr = new std::normal_distribution<double>( chirpvec[3], fifth );
 }
 
-std::vector<double> & ScanParams::getchirpnoise(void)
+std::vector<double> & Params::getchirpnoise(void)
 {
 	std::vector<double> v(4,double(0));
 	v[0] = (*chirpnoiseDistPtr)(rng);

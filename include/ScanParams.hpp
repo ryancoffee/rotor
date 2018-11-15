@@ -1,21 +1,17 @@
-#ifndef SCANPARAMS
+#ifndef PARAMS
 
-#define SCANPARAMS
+#define PARAMS
 
-#include <Pulse.hpp>
 #include <Constants.hpp>
-#include <random>
-#include <cmath>
 
 using namespace Constants;
 
-class ScanParams 
+class Params 
 {
-	friend class PulseFreq;
 
 	public:
-	ScanParams();
-	~ScanParams();
+	Params();
+	~Params();
 
 	size_t nimages(size_t in){nimgs=in;return nimgs;}
 	inline size_t nimages(void){return nimgs;}

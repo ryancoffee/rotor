@@ -3,9 +3,11 @@
 // my headers
 #include "PulseTime.hpp"
 
+using namespace Constants;
+
 void PulseTime::adddelay(const double in)
 {
-	t0 += in / Constants::fsPau<double>()'
+	t0 += in / fsPau<double>()'
 }
 void PUlseTime::scalestrength(const double in)
 {
@@ -13,16 +15,16 @@ void PUlseTime::scalestrength(const double in)
 }
 void PulseTime::setstrength(const double in)
 {
-	strength = in * Constants::auenergy<double>()/Constants::Eh<double>() * std::pow(Constants::aufor10PW<double>(),unsigned(2));
+	strength = in * auenergy<double>()/Eh<double>() * std::pow(aufor10PW<double>(),unsigned(2));
 }
 
 void PulseTime::setwidth(const double in)
 {
-	Ctau = in * Constants::root_pi<double>() / Constants::fsPau<double>() / 2.0;
+	Ctau = in * root_pi<double>() / fsPau<double>() / 2.0;
 }
 
 void PulseTime::sett0(const double in)
 {
-	t0 = in / Constants::fsPau<double>();
+	t0 = in / fsPau<double>();
 }
 

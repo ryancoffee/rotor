@@ -13,22 +13,17 @@
 // standard includes
 #include <cmath>
 #include <vector>
+#include <complex>
 #include <boost/numeric/odeint.hpp>
+#include <boost/numeric/ublas/matrix.hpp>
+#include <boost/numeric/ublas/io.hpp>
 
-// gsl includes
-#include <gsl/gsl_const_num.h>
-#include <gsl/gsl_math.h>
-#include <gsl/gsl_complex.h>
-#include <gsl/gsl_complex_math.h>
-#include <gsl/gsl_errno.h>
-#include <gsl/gsl_matrix.h>
-#include <gsl/gsl_vector.h>
-#include <gsl/gsl_blas.h>
-#include <gsl/gsl_odeiv.h>
+
 
 // my headers
-#include "Constants.h" // --- conversion constancts lie a0, Eh, icmPau, fsPau etc. --- //
-#include "Rotor.hpp" // --- this is the molecule specifics like ej and pj vectors --- //
+#include <Constants.hpp> // --- conversion constancts lie a0, Eh, icmPau, fsPau etc. --- //
+#include <Rotor.hpp> // --- this is the molecule specifics like ej and pj vectors --- //
+#include <DataOps>
 #include "Members.hpp" // --- This is the colleciton of member functions ( kickfunc and kickjac for now ) --- //
 #include "FuncJac.hpp" // --- This defines kickfunc and kickjac
 
@@ -43,7 +38,7 @@
 #define UPPER CblasUpper
 #define LOWER CblasLower
 
-using namespace std;
+using namespace std::complex_literals;
 
 class KickPropagator
 {
@@ -68,6 +63,7 @@ private:
   void * voidPtr;
   gsl_matrix_complex *UmatPtr;
   gsl_vector_complex *yPtr;
+  std::vector<std::complex<double>> y;
   
   gsl_vector_complex_view Ucol;
   gsl_vector_complex_view Upart;

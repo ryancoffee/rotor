@@ -13,16 +13,15 @@
 // my headers
 #include <Constants.hpp>
 
-// my definitions
-class ScanParams;
+using namespace Constants;
 
 class PulseTime {
 
 	public:
 		PulseTime(double strength_in = 1e-3 * 0.696, double width_in = 50, double t0_in = 0.0) : 
-			strength(strength_in * Constants::auenergy<double>()/Constants::Eh<double>() * std::pow(Constants::aufor10PW<double>(),unsigned(2))), 
-			Ctau(width_in * Constants::root_pi<double>() / Constants::fsPau<double>() / 2.0),
-			t0(t0_in / Constants::fsPau<double>())
+			strength(strength_in * auenergy<double>()/Eh<double>() * std::pow(aufor10PW<double>(),int(2))), 
+			Ctau(width_in * root_pi<double>() / fsPau<double>() / 2.0),
+			t0(t0_in / fsPau<double>())
 	{
 		//    clog << "Creating Pulse " << this << endl;
 	}
@@ -41,22 +40,21 @@ class PulseTime {
 		inline double getCtau() { return Ctau; }
 		inline double gett0() { return t0; }
 
-		inline bool getenvelope(const double t,double *FF,double *dFFdt) 
+		inline bool getenvelope(const double t,double &FF,double &dFFdt) 
 		{
 			if ( inpulse(t) ){
-				*FF = strength * ( gsl_pow_2( cos(Constants::half_pi<double>()*(t-t0)/Ctau) ) );
-				*dFFdt = -strength/2 * ( Constants::pi<double>()/Ctau * sin(Constants::pi<double>()*(t-t0)/Ctau));
+				FF = strength * ( std::pow( cos(half_pi<double>()*(t-t0)/Ctau) , int(2)) );
+				dFFdt = -strength/2 * ( pi<double>()/Ctau * sin(pi<double>()*(t-t0)/Ctau));
 				return true;
-			} else {
-				*FF = 0.0;
-				*dFFdt = 0.0;
-				return false;
 			}
+			FF = 0.0;
+			dFFdt = 0.0;
+			return false;
 		}
-		inline bool getenvelope(const double t,double *FF) 
+		inline bool getenvelope(const double t,double &FF) 
 		{
 			if ( inpulse(t) ){
-				*FF = strength * ( gsl_pow_2( cos(Constants::half_pi<double>()*(t-t0)/Ctau) ) );
+				*FF = strength * ( std::pow( cos(half_pi<double>()*(t-t0)/Ctau),int(2) ) );
 				return true;
 			} else {
 				*FF = 0.0;
@@ -67,14 +65,7 @@ class PulseTime {
 	private:
 		double strength, Ctau, t0;
 
-		inline bool inpulse(const double t) 
-		{
-			if (t >= -Ctau && t <= Ctau){
-				return true;
-			} else {
-				return false;
-			}
-		}
+		inline bool inpulse(const double t) { return (t >= -Ctau && t <= Ctau);	}
 };
 
 #endif

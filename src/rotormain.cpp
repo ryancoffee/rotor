@@ -85,15 +85,15 @@ int main(int argc, char *argv[]) {
 		Starting to use oop and so will surely fail for a year.
 	*/
 
-	const double kTinau = std::stof(argv[2])*kb<float>()/Eh<float>();
-	Molecules molecule<double>(Molecules::nno,double(kTinau)); // Setting molecule ensemble to nno and temperature to argv[2]*kb/Eh
-	std::cout << "The molecules ID is:\t" << molecule.getMolID() << std::endl;
+	const double kTinau = boost::lexical_cast<float>(argv[2])*kb<float>()/Eh<float>();
+	Molecules molecule(Molecules::nno,double(kTinau)); // Setting molecule ensemble to nno and temperature to argv[2]*kb/Eh
+	std::cout << "The molecules ID is:\t" << molecule.printMolID() << std::endl;
 
 	unsigned nvibs = 4; // set this to reasonable number after debugging
 	vEnsemble vsystem<double>(nvibs,molecule);
 	nvibs = vsystem.initdist();
 
-	unsigned njs = (unsigned)std::stoi(argv[1]);
+	size_t njs = boost::lexical_cast<size_t>(argv[1]);
 	std::vector< jEnsemble<double> > jsystem;
 	jsystem.reserve(nvibs);
 	for (unsigned v=0; v<jsystem.size();++v){
@@ -104,10 +104,11 @@ int main(int argc, char *argv[]) {
 	const unsigned npulses = (unsigned)std::stoi(argv[6]);
 	std::vector<PulseTime> pulses<double>(npulses);
 	for (unsigned i=0;i<pulses.size();++i){
-		pulses[i].setstrength(delta_alpha()*auenergy<double>()/Eh<double>() * std::pow(aufor10PW<double>(),int(2)) * lexical_cast<double>(argv[7]) );
-		pulses[i].scalestrength(std::pow(std::stof(argv[8]),i));
-		pulses[i].setwidth(root_pi<double>() * static_cast<double>(std::stof(argv[9]))/fsPau/2.0;);
-		pulses[i].sett0(double(i+1) * static_cast<double>(-atof(argv[10]))/Constants::fsPau<double>()); // run pulses back to negative time so 1st full is near 0
+		pulses[i].setstrength(molecule.delta_alpha()*auenergy<double>()/Eh<double>() * std::pow(aufor10PW<double>(),int(2)) * float(atof(getenv("intensity"))) );
+		pulses[i].scalestrength(std::pow(float(atof(getenv(scalestrength))),//argv[8]),
+					i));
+		pulses[i].setwidth(root_pi<double>() * boost::lexical_cast<double>(atof(getenv("pulsewidth")))/fsPau/2.0;);
+		pulses[i].sett0(double(i+1) * double(-atof(getenv("delay")))/fsPau<double>()); // run pulses back to negative time so 1st full is near 0
 	}
 
 
