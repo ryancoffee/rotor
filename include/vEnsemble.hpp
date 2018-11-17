@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <fstream>
+#include <limits>
 
 #include <DataOps.hpp>
 #include <Constants.hpp>
@@ -14,14 +15,15 @@ class Molecules;
 
 class vEnsemble {
 
-//friend class Molecules;
+	friend class Molecules;
 
 public:
 
-	vEnsemble(size_t nvibsin,Molecules * molPtrin = nullptr);
+	vEnsemble(size_t nvibsin,Molecules * molPtrin);
 	~vEnsemble(void);
 	void setkT(float kTinauin);
-	void setmolecule(Molecules * molPtrin);
+	inline Molecules * setmolecule(Molecules * molPtrin){ m_molPtr = molPtrin; return m_molPtr;}
+
 	size_t limitpops(double thresh = std::nextafter(double(0),double(1)));
 	size_t initdist(void);
 	double getpop(void);
@@ -34,10 +36,10 @@ private:
 
 	Molecules * m_molPtr;
 	
-	size_t setenergies(std::string & molstring);
+	size_t setenergies(Molecules * molPtrin);
 
 	size_t v;
-	size_t maxv;
+	size_t m_nvibs;
 
 	double kTinauin;
 	std::vector<double> pv;

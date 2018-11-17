@@ -1,58 +1,27 @@
 #include <Constants.hpp> // for kb and Eh units
 #include <jEnsemble.hpp>
-#include <Ensemble.hpp>
 #include <algorithm>
 
 using Constants::kb;
 using Constants::Eh;
 
 
-jEnsemble::jEnsemble(unsigned njsin = 50,unsigned vin = 0,Molecules * molPtrin = nullptr)
+jEnsemble::jEnsemble(size_t njsin = 50,size_t vin = 0)
 : m_njs(njsin)
-, m_popthresh(10*std::numeric_limits<double>::min())
 , m_v(vin)
-, m_molPtr(molPtrin)
 {
-	m_molPtr = new Molecules(*mol);
         ej.resize(m_njs,double(0));
         pj.resize(m_njs,double(0));
-	mol.fill(*this);
 	aajm.resize(m_njs,double(0));
 	bbjm.resize(m_njs,double(0));
 	ccjm.resize(m_njs,double(0));
+	if (molPtrin != nullptr){
+		m_molPtr = molPtrin;
+		m_molPtr->fill<double>(*this);
+	}
 }       
 jEnsemble::~jEnsemble(void)
 {
-	if (m_molPtr~=nullptr){
-		delete m_molePtr;
-		m_molPtr = nullptr;
-	}
-}
-
-unsigned jEnsemble::limitpops(double thresh = std::nextafter(double(0),double(1)))
-{ 
-	std::vector<double>::iterator it = std::find_end(pv.begin(),pv.end(),[](double x,double thresh){return bool(x>thresh);});
-	unsigned newsize = it - pj.begin() + 1;
-	pj.resize(newsize);
-	ej.resize(newsize);
-	return pv.size();
-}
-
-unsigned jEnsemble::initdist(void){
-	setenergies();
-	unsigned j = 0;
-	float kT = m_molPtr->getkT();
-	pj.assign(ej.begin(),ej.end());
-	std::transform(pv.begin(), pv.end(), pv.begin(), 
-			[float & kT,unsigned &j,Molecules * m_molPtr](float x){
-			val = (x/kt>float(0.1) ? std::exp(-x/kT) : 1+std::expm1(-x/kT) );
-				val *= m_molPtr->multiplicity(j)(2*(j)+1);
-				j++;
-				return val;
-				}
-		      );
-	safe_normalize(pj);
-	return pj.size()
 }
 
 void jEnsemble::checkgrowth(void){

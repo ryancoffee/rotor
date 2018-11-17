@@ -83,7 +83,7 @@ int main(int argc, char *argv[]) {
 
 	const size_t nthreads((size_t)atoi(getenv("nthreads")));
 	const double kTinau((float)(atof(getenv("TinKelvin")))*kb<float>()/Eh<float>());
-	Molecules molecule(Molecules::nno,double(kTinau)); 
+	Molecules molecule(double(kTinau),Molecules::nno); 
 	std::cout << "The molecules ID is:\t" << molecule.printMolID() << std::endl;
 
 	size_t nvibs((size_t)atoi(getenv("nvibs"))); 

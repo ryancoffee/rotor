@@ -4,36 +4,40 @@
 #include <vector>
 #include <iostream>
 #include <fstream>
+#include <limits>
+
 #include <Constants.hpp>
 #include <DataOps.hpp>
 #include <Molecules.hpp>
-#include <limits>
 
 using DataOps::operator<<;
 
-class Molecules;
 
 class jEnsemble {
 
+friend class Molecules;
+
 public:
 
-	jEnsemble(unsigned njsin,unsigned vin,Molecules * m_molPtr);
+	jEnsemble(size_t njsin,size_t vin);
 	~jEnsemble(void);
 
-	void setm(const unsigned m_in){m=m_in;}
-	void setv(const unsigned v_in){v=v_in;}
-	void setmolecule(Molecules * molPtrin){m_molPtr = molPtrin;}
+	inline int setm(const int min){m=min; return m;}
+	inline size_t setv(const size_t vin){v=vin; return v;}
 
+	double getpop(void);
+	void normalize(void);
+	size_t limitpops(double thresh);
+
+	size_t initdist(void);
         inline void printdist(std::ofstream & of) { of << pj;}
-	inline double setpopthresh(double in){m_popthresh = in;return m_popthresh;}
 
 
 private:
-	unsigned m_realj;
-	unsigned v;
+	size_t m_realj;
+	size_t v;
 	int m;
-	unsigned m_njs;
-	Molecules * m_molPtr;
+	size_t m_njs;
 
 	std::vector<double> pj;
 	std::vector<double> ej;
@@ -43,9 +47,8 @@ private:
 
 
 protected:
-	double m_popthresh;//(10*std::numeric_limits<double>::min()); // used in testing for population leaking up past the 10% of end of the vector	
-	void checkgrowth(void);
-	void fill6j(const unsigned oldsz = 0);
+	bool checkgrowth(void);
+	void fill6j(const size_t oldsz = 0);
 };
 
 #endif  

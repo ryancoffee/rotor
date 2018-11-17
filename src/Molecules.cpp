@@ -196,4 +196,56 @@ bool Molecules::fill(jEnsemble & jens)
 	return true;
 }
 
+template <typename DType>
+size_t Molecules::initdist(jEnsemble & jens){
+	size_t  j = 0;
+	DType kT = m_kT;
+	jens.pj.assign(jens.ej.begin(),jens.ej.end());
+	std::transform(jens.pj.begin(), jens.pj.end(), jens.pj.begin(), 
+			[&j,&kT](DType x){
+				DType val = (x/kT>DType(0.1) ? std::exp(-x/kT) : 1+std::expm1(-x/kT) );
+				val *= jmultiplicity<DType>(j)(2*(j)+1);
+				j++;
+				return val;
+				}
+		      );
+	DataOps::safe_normalize(jens.pj);
+	return jens.pj.size();
+}
+
+template <typename DType>
+size_t Molecules::initdist(vEnsemble & vens){
+	DType kT = m_kT;
+	vens.pv.assign(vens.ev.begin(),vens.ev.end());
+	std::transform(vens.pv.begin(), vens.pv.end(), vens.pv.begin(), 
+				[kT](DType x){
+					return (x/kT>DType(0.1)? std::exp(-x/kT) : 1+ std::expm1(-x/kT) );
+				});
+	DataOps::safe_normalize(vens.pv);
+	vens.limitpops(DType(1e-2));
+	DataOps::safe_normalize(vens.pv);
+	std::clog << "relevent vib pops = " << vens.pv << std::endl;
+	return vens.pv.size();
+}
+
+template <typename DType>
+size_t Molecules::limitpops(jEnsemble & jens, DType thresh)
+{ 
+	auto it = std::find_end(jens.pj.begin(),jens.pj.end(),[](DType x,DType thresh){return bool(x>thresh);});
+	//std::vector<DType>::iterator it = std::find_end(jens.pj.begin(),jens.pj.end(),[](DType x,DType thresh){return bool(x>thresh);});
+	size_t newsize = it - jens.pj.begin() + 1;
+	jens.pj.resize(newsize);
+	jens.ej.resize(newsize);
+	return jens.pj.size();
+}
+template <typename DType>
+size_t Molecules::limitpops(vEnsemble & vens,DType thresh)
+{
+	auto it = std::find_end(vens.pv.begin(),vens.pv.end(),[](DType x,DType thresh){return bool(x>thresh);});
+	//std::vector<DType>::iterator it = std::find_end(vens.pv.begin(),vens.pv.end(),[](DType x,DType thresh){return bool(x>thresh);});
+	size_t newsize = it - vens.pv.begin() + 1;
+	vens.pv.resize(newsize);
+	vens.ev.resize(newsize);
+	return vens.pv.size();
+}
 

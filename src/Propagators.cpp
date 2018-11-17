@@ -3,10 +3,12 @@
 // --- these classes are for the various coupled and free propagators for the rotor system --- //
 
 // standard includes
-#include <math.h>
-#include <iostream>
-#include <iomanip>
-using namespace std;
+#include <cmath>
+//#include <iostream>
+//#include <iomanip>
+
+
+/*
 // gsl includes
 #include <gsl/gsl_const_num.h>
 #include <gsl/gsl_math.h>
@@ -17,19 +19,20 @@ using namespace std;
 #include <gsl/gsl_vector.h>
 #include <gsl/gsl_blas.h>
 #include <gsl/gsl_odeiv.h>
+*/
 
 // my headers
-#include "Constants.h" // --- conversion constancts lie a0, Eh, icmPau, fsPau etc. --- //
-#include "Pulse.hpp" // --- this handels the pulse envelope parameters like strength, duration and t0, and returns fales of FF and dFFdt --- //
-#include "Temp.hpp" // --- this give temperature object, and can represent it in various units --- //
-#include "LookUp.hpp" // --- this is the 3j symbol lookup table --- //
-#include "Signal.hpp" // --- this handles the time and data vectors, updates and file writing --- //
-#include "Rotor.hpp" // --- this is the molecule specifics like ej and pj vectors --- //
-#include "Inlines.hpp"  // --- dimension and index conversion functions ( and other inline functions ) --- //
-#include "Members.hpp" // --- This is the colleciton of member functions ( kickfunc and kickjac for now ) --- //
-#include "Params.hpp" // --- This is the collection of pointers to objects that gets passed to kickfunc and kickjac mainly --- //
 #include "Propagators.hpp"
+#include "PulseTime.hpp" // --- this handels the pulse envelope parameters like strength, duration and t0, and returns fales of FF and dFFdt --- //
+//#include "Temp.hpp" // --- this give temperature object, and can represent it in various units --- //
+//#include "LookUp.hpp" // --- this is the 3j symbol lookup table --- //
+//#include "Signal.hpp" // --- this handles the time and data vectors, updates and file writing --- //
+//#include "Rotor.hpp" // --- this is the molecule specifics like ej and pj vectors --- //
+//#include "Inlines.hpp"  // --- dimension and index conversion functions ( and other inline functions ) --- //
+//#include "Members.hpp" // --- This is the colleciton of member functions ( kickfunc and kickjac for now ) --- //
+//#include "Params.hpp" // --- This is the collection of pointers to objects that gets passed to kickfunc and kickjac mainly --- //
 
+/*
 // my preprocessor defs
 #define ABSTOL 1e-1// 1e-10
 #define RELTOL 1e-1//1e-8        // relative tolerance reltol = 1e-3 in matlab default
@@ -42,10 +45,9 @@ using namespace std;
 #define LEFT CblasLeft
 #define UPPER CblasUpper
 #define LOWER CblasLower
+*/
 
-using namespace std;
-
-// --- This is the propagatof that steps over the pulses.
+// --- This is the propagator that steps over the pulses.
 
 KickPropagator::KickPropagator(Rotor &rotorref) :  rotorRef(rotorref),
 						   dim( rotorRef.getsizej() - rotorRef.getm() ),

@@ -5,25 +5,37 @@
 
 #include <Constants.hpp>
 #include <vEnsemble.hpp>
+#include <jEnsemble.hpp>
 
 
 class Molecules {
 
-	enum MolID {nno=0,nn,oo,ii,oco};
 
 	public:
+
+	enum MolID {nno,nn,oo,ii,oco};
+
 	Molecules(float kTin, MolID in);
 	~Molecules(void);
 
 template <typename DType>
 	bool fill(vEnsemble & vens);
 template <typename DType>
-	bool fill(std::vector<DType> & jens);
-//	bool fill(jEnsemble & jens);
+	bool fill(jEnsemble & jens);
 template <typename DType>
 	DType & jmultiplicity(const unsigned j);
+template <typename DType>
+	DType kT(void){return m_kT;}
 
 	inline void setkT(float kTin) {m_kT = kTin * Constants::kb<float>()/Constants::Eh<float>();}
+template <typename DType>
+	size_t initdist(vEnsemble & vens);
+template <typename DType>
+	size_t initdist(jEnsemble & jens);
+template <typename DType>
+	size_t limitpops(vEnsemble & vens,DType thresh = std::nextafter(DType(0),DType(1)));
+template <typename DType>
+	size_t limitpops(jEnsemble & vens,DType thresh = std::nextafter(DType(0),DType(1)));
 
 	MolID & getMolID(void);
 	std::string & getMolIDstring(void);
