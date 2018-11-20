@@ -16,12 +16,15 @@
 #include <complex>
 #include <boost/numeric/odeint.hpp>
 #include <boost/numeric/ublas/matrix.hpp>
+#include <boost/numeric/ublas/vector.hpp>
 #include <boost/numeric/ublas/io.hpp>
 
 // my headers
 #include <Constants.hpp> // --- conversion constancts lie a0, Eh, icmPau, fsPau etc. --- //
 #include <DataOps.hpp>
-
+#include <PulseTime.hpp> // --- this handels the pulse envelope parameters like strength, duration and t0, and returns fales of FF and dFFdt --- //
+#include <jEnsemble.hpp>
+#include <vEnsemble.hpp>
 /*
 #include "Members.hpp" // --- This is the colleciton of member functions ( kickfunc and kickjac for now ) --- //
 #include "FuncJac.hpp" // --- This defines kickfunc and kickjac
@@ -36,80 +39,67 @@
 #define LEFT CblasLeft
 #define UPPER CblasUpper
 #define LOWER CblasLower
-*/
+ */
 
 using namespace std::complex_literals;
 
-class KickPropagator
+class jKickPropagator
 {
-public:
-  KickPropagator(Rotor &rotorref);
-  ~KickPropagator();
+	public:
+		KickPropagator(const size_t dimin);
+		~KickPropagator();
 
-  //inline bool apply(double *t,gsl_vector_complex *yinPtr)
-  inline bool apply(double &t,std::vector< std::complex<double> > &yin)
-  {
-    //    clog << "kicker.apply(t,dt,yPTr) is in question" << endl;
-    bool wasapplied = false;
-    gsl_blas_ztrmv(UPPER,NOTRANS,CblasNonUnit,UmatPtr,yinPtr);
-    *t += kickstepsize;
-    //    clog << "\t\t\t... kicker.apply(t,dt,yPTr) is OK" << endl;
-    return wasapplied;
-  }
-  
-private:
-  bool build();
-   Rotor &rotorRef;
-  const size_t dim;
-  void * voidPtr;
-  gsl_matrix_complex *UmatPtr;
-  gsl_vector_complex *yPtr;
-  std::vector<std::complex<double>> y;
-  
-  gsl_vector_complex_view Ucol;
-  gsl_vector_complex_view Upart;
-  
-  double kickstepsize;
+		inline bool apply(double &t,std::vector< std::complex<double> > &yin)
+		{
+			//    clog << "kicker.apply(t,dt,yPTr) is in question" << endl;
+			bool wasapplied = false;
+			gsl_blas_ztrmv(UPPER,NOTRANS,CblasNonUnit,UmatPtr,yinPtr);
+			t += kickstepsize;
+			//    clog << "\t\t\t... kicker.apply(t,dt,yPTr) is OK" << endl;
+			return wasapplied;
+		}
 
-  void printUmat();
-  void printcornerUmat();
-  void printcornerUmat_real();
-  void printcornerUmat_imag();
-  void sampleyPtr();
+	private:
+		bool build();
+		size_t dim;
+		boost::numeric::ublas::matrix<std::complex<double> > Umat;
+		//gsl_matrix_complex *UmatPtr;
+		//gsl_vector_complex *yPtr;
+
+		// use boost
+		vector_slice<vector<std::complex<double> > > Uslice;
+		gsl_vector_complex_view Ucol;
+		gsl_vector_complex_view Upart;
+
+		double kickstepsize;
+
+		void printUmat();
+		void printcornerUmat();
+		void printcornerUmat_real();
+		void printcornerUmat_imag();
+		void sampleyPtr();
 };
 
-class FreePropagator
+
+
+
+
+class jFreePropagator
 {
-public:
-  FreePropagator(Rotor &rotorref, const double dtinau);
-  ~FreePropagator();
+	public:
+		FreePropagator(const double dtinau);
+		~FreePropagator();
 
-  inline void apply(double *t, gsl_vector_complex *y) 
-  {
-    //    clog << "fixed freestep.apply(t,yPtr) in question ... " << endl;
-    for (size_t i = 0; i < stepvec->size; i++){
-      gsl_vector_complex_set(y,
-			     i,
-			     gsl_complex_mul(gsl_vector_complex_get(y,i),
-					     gsl_complex_polar(1.0,fmod(gsl_vector_get(stepvec,i),2*M_PI) ) 
-					     )
-			     );
-      // add phase = -(Ej-Ejstart)dt to coeffs
-    }
-    *t += dt;
-    //    clog << "\t\t\t... fixed freestep.apply(t,yPtr) is OK. " << endl;
-  }
+		double & apply(double &t, std::vector< std::complex<double> > &y);
+		double & apply(double &t, const double &delta_tin, std::vector< std::complex< double> > &y);  
 
-  void apply(double *t, const double delta_tin, gsl_vector_complex *y);  
-  
-private:
-  void build();
-  
-  Rotor &rotorRef;
-  const unsigned dim;
-  gsl_vector *stepvec ;
-  gsl_vector *variablestep;
-  double dt;
+	private:
+		void build();
+
+		size_t dim;
+		std::vector< std::complex<double> > Uvec:
+
+			double dt;
 };
 
 
