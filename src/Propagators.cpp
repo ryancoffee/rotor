@@ -4,66 +4,29 @@
 
 // standard includes
 #include <cmath>
-//#include <iostream>
-//#include <iomanip>
-
-
-/*
-// gsl includes
-#include <gsl/gsl_const_num.h>
-#include <gsl/gsl_math.h>
-#include <gsl/gsl_complex.h>
-#include <gsl/gsl_complex_math.h>
-#include <gsl/gsl_errno.h>
-#include <gsl/gsl_matrix.h>
-#include <gsl/gsl_vector.h>
-#include <gsl/gsl_blas.h>
-#include <gsl/gsl_odeiv.h>
- */
 
 // my headers
 #include <Propagators.hpp>
-//#include "Temp.hpp" // --- this give temperature object, and can represent it in various units --- //
-//#include "LookUp.hpp" // --- this is the 3j symbol lookup table --- //
-//#include "Signal.hpp" // --- this handles the time and data vectors, updates and file writing --- //
-//#include "Rotor.hpp" // --- this is the molecule specifics like ej and pj vectors --- //
-//#include "Inlines.hpp"  // --- dimension and index conversion functions ( and other inline functions ) --- //
-//#include "Members.hpp" // --- This is the colleciton of member functions ( kickfunc and kickjac for now ) --- //
-//#include "Params.hpp" // --- This is the collection of pointers to objects that gets passed to kickfunc and kickjac mainly --- //
 
-/*
-// my preprocessor defs
-#define ABSTOL 1e-1// 1e-10
-#define RELTOL 1e-1//1e-8        // relative tolerance reltol = 1e-3 in matlab default
-
-// gsl_blas defs
-#define DAGGAR CblasConjTrans
-#define TRANS CblasTrans
-#define NOTRANS CblasNoTrans
-#define RIGHT CblasRight
-#define LEFT CblasLeft
-#define UPPER CblasUpper
-#define LOWER CblasLower
- */
 
 // --- This is the propagator that steps over the pulses.
 
-KickPropagator::KickPropagator(Rotor &rotorref) :  rotorRef(rotorref),
-	dim( rotorRef.getsizej() - rotorRef.getm() ),
+jKickPropagator::jKickPropagator(jEnsemble & jens) 
+: rotorRef(rotorref)
+, dim( jens.getsizej())
 	UmatPtr(gsl_matrix_complex_calloc(dim,dim)),
 	yPtr(gsl_vector_complex_alloc(dim))
 {
+	Umat = HERE HERE HERE HERE;
 	voidPtr = (void * const)&rotorref;
 	build();
 }
 
-KickPropagator::~KickPropagator()
+jKickPropagator::~jKickPropagator()
 {
-	gsl_matrix_complex_free(UmatPtr);
-	gsl_vector_complex_free(yPtr);  
 }
 
-double & KickPropagator::apply(double &t, std::vector< std::complex<double> > &y)
+double & jKickPropagator::apply(double &t, std::vector< std::complex<double> > &y)
 {
 	// add phase = -(Ej-Ejstart)dt to coeffs
 	y = std::exp();
@@ -82,10 +45,10 @@ double & KickPropagator::apply(double &t, std::vector< std::complex<double> > &y
 }
 
 
-bool KickPropagator::build()
+bool jKickPropagator::build(jEnsemble & jens,PulseTime & pulse)
 {
 	//  clog << "\t\t\t ... Building kicker matrix ...\n\t\t\t\t\t.\n\t\t\t\t\t.\n\t\t\t\t\t.\n" << endl;
-	kickstepsize = 2 * rotorRef.getCtau();
+	kickstepsize = 2 * pulse.getCtau();
 
 	// allocate ode workspace
 	const gsl_odeiv_step_type *T = gsl_odeiv_step_rkf45;  // for a smooth step // gsl_odeiv_step_rk8pd;  // for a fast step
@@ -152,7 +115,7 @@ bool KickPropagator::build()
 	return true;
 }
 
-void KickPropagator::printUmat()
+void jKickPropagator::printUmat()
 {
 	Ucol = gsl_matrix_complex_column(UmatPtr,0);  
 	for (unsigned l=0;l<Ucol.vector.size;l++){
@@ -163,7 +126,7 @@ void KickPropagator::printUmat()
 	}
 
 }
-void KickPropagator::printcornerUmat()
+void jKickPropagator::printcornerUmat()
 {
 	Ucol = gsl_matrix_complex_column(UmatPtr,0);  
 	unsigned quit =  GSL_MIN(Ucol.vector.size,10);
@@ -175,7 +138,7 @@ void KickPropagator::printcornerUmat()
 	}
 
 }
-void KickPropagator::printcornerUmat_real()
+void jKickPropagator::printcornerUmat_real()
 {
 	clog << "\t\t\t --- Corner of Umat_real ---\n";
 	Ucol = gsl_matrix_complex_column(UmatPtr,0);  
@@ -188,7 +151,7 @@ void KickPropagator::printcornerUmat_real()
 	}
 
 }
-void KickPropagator::printcornerUmat_imag()
+void jKickPropagator::printcornerUmat_imag()
 {
 	clog << "\t\t\t --- Corner of Umat_imag ---\n";
 	Ucol = gsl_matrix_complex_column(UmatPtr,0);  
@@ -202,7 +165,7 @@ void KickPropagator::printcornerUmat_imag()
 
 }
 
-void KickPropagator::sampleyPtr(){
+void jKickPropagator::sampleyPtr(){
 	for (unsigned k = 0; k < yPtr->size; k++){
 		clog << setprecision(3) << gsl_complex_abs(gsl_vector_complex_get(yPtr,k)) << "\n";
 	}
@@ -213,53 +176,36 @@ void KickPropagator::sampleyPtr(){
 
 
 
-FreePropagator::FreePropagator(Rotor &rotorref, const double dtinau) :
-	rotorRef(rotorref),
-	dim(rotorRef.getsizej() - rotorRef.getm()),
-	stepvec(gsl_vector_calloc(dim)),
-	variablestep(gsl_vector_calloc(dim))
-
+jFreePropagator::jFreePropagator(const double dtinau = 4.)
+: m_dt(dtinau)
 {
-	dt = dtinau;
 	build();
 }
 
-FreePropagator::~FreePropagator(){ gsl_vector_free(stepvec); gsl_vector_free(variablestep);}
+jFreePropagator::~jFreePropagator(){}
 
-void FreePropagator::apply(double *t, const double delta_tin, gsl_vector_complex *y)
+inline double jFreePropagator::apply(jEnsemble & jens,std::vector<std::complex> > & yin, double &t)
 {
-	//  clog << "variable freestep.apply(t,dt,yPTr) is in question ..." << endl;
-	bool success = false;
-	success = rotorRef.ejinau(variablestep);
-
-	if (!success){
-		/*
-		   cerr << "Something went wrong in FreePropagator.apply(t,dt,y)" 
-		   << "\nvariablestep->size = " << variablestep->size 
-		   << "\ny->size = " << y->size 
-		   << endl;
-		 */
-		return;
-	}
-	gsl_vector_scale(stepvec,-delta_tin);    
-	for (size_t i = 0; i < variablestep->size; i++){
-		gsl_vector_complex_set(y,
-				i,
-				gsl_complex_mul(gsl_vector_complex_get(y,i),
-					gsl_complex_polar(1.0,fmod(gsl_vector_get(variablestep,i),2*M_PI) ) 
-					)
-				);
-		// add phase = -(Ej-Ejstart)dt to coeffs
-	}
-	*t += delta_tin;
-	//  clog << "\t\t\t... variable freestep.apply(t,dt,yPTr) is OK" << endl;
+	return apply(jens,yin,t,m_dt);
+}
+inline double jFreePropagator::apply(jEnsemble & jens,std::vector<std::complex> > & yin, double &t, const double & delta_tin)
+{
+	std::transform(jens.begin()+jens.m,jens.end(),y.begin(),y.begin(),
+		[delta_tin](double & z, std::complex & y){return y * std::polar(1.0,-dt*z)}
+	);
+	return t;
 }
 
-
 // private:
-void FreePropagator::build()
+void jFreePropagator::build(jEnsemble & jens,const double & dt)
 {
-	//  clog << "\t\t\t ... Building freestep vector ...\n\t\t\t\t\t.\n\t\t\t\t\t.\n\t\t\t\t\t.\n" << endl; 
-	rotorRef.ejinau(stepvec);
-	gsl_vector_scale(stepvec,-dt);
+	Uvec.resize(jens.ej.size()-jens.m);
+	std::transform(jens.begin()+jens.m,jens.end(),Uvec.begin()
+			[dt](double &z) -> std::complex<double> { return std::polar(1.0,-dt*z) ;}
+		      );
+	return true;
+}
+bool jFreePropagator::build(jEnsemble & jens)
+{
+	return build(jens,m_dt);
 }

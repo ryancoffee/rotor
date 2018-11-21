@@ -112,7 +112,6 @@ bool Molecules::fill(jEnsemble & jens)
 	std::vector<DType> Bv;
 	std::vector<DType> Dv;
 	std::vector<DType> Hv;
-	unsigned v;
 
 	switch (this->m_id){
 		case nno:
@@ -124,7 +123,7 @@ bool Molecules::fill(jEnsemble & jens)
 
 			assert(Bv.size() == Dv.size());
 			assert(Bv.size() == Hv.size());
-			v = std::min(Bv.size()-1,jens.v);
+			size_t v = std::min(Bv.size()-1,jens.v);
 			for (unsigned j=0;j<jens.ej.size();++j){
 				jens.ej[j] = 
 					( Bv[v]*j*(j+1)
@@ -141,7 +140,7 @@ bool Molecules::fill(jEnsemble & jens)
 
 			assert(Bv.size() == Dv.size());
 			assert(Bv.size() == Hv.size());
-			v = std::min(Bv.size()-1,jens.v);
+			size_t v = std::min(Bv.size()-1,jens.v);
 			for (unsigned j=0;j<jens.ej.size();j++){
 				jens.ej[j] = 
 					( Bv[v]*j*(j+1)
@@ -154,7 +153,7 @@ bool Molecules::fill(jEnsemble & jens)
 			// numbers come from Loftus and Kuprienie, J. Phys. Chem. ref. Data, Vol. 6, No. 1, 1977. p242
 			Bv = {1.98957, 1.972, 1.9548, 1.9374, 1.9200, 1.9022, 1.8845, 1.8666, 1.8488, 1.8310, 1.8131, 1.7956, 1.7771, 1.7590, 1.7406, 1.7223};
 			Dv = {1e-6*5.75};
-			v = std::min(Bv.size()-1,jens.v);
+			size_t v = std::min(Bv.size()-1,jens.v);
 			for (unsigned j=0;j<jens.ej.size();++j){
 				jens.ej[j] = 
 					( Bv[v]*j*(j+1)
@@ -166,7 +165,7 @@ bool Molecules::fill(jEnsemble & jens)
 			Bv = {1.437676476, 1.42186454, 1.4061199, 1.39042};
 			Dv = {4.84256e-6, 4.8418e-6, 4.8410e-6, 4.8402e-6};
 			Hv = {2.8e-12};
-			v = std::min(Dv.size()-1,jens.v);
+			size_t v = std::min(Dv.size()-1,jens.v);
 			for (unsigned j=0;j<jens.ej.size();++j){
 				jens.ej[j] = 
 					( Bv[v]*j*(j+1)

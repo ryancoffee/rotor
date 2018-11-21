@@ -15,8 +15,9 @@
 #include <vector>
 #include <complex>
 #include <boost/numeric/odeint.hpp>
-#include <boost/numeric/ublas/matrix.hpp>
 #include <boost/numeric/ublas/vector.hpp>
+#include <boost/numeric/ublas/matrix.hpp>
+#include <boost/numeric/ublas/hermitian.hpp>
 #include <boost/numeric/ublas/io.hpp>
 
 // my headers
@@ -24,27 +25,15 @@
 #include <DataOps.hpp>
 #include <PulseTime.hpp> // --- this handels the pulse envelope parameters like strength, duration and t0, and returns fales of FF and dFFdt --- //
 #include <jEnsemble.hpp>
-#include <vEnsemble.hpp>
-/*
-#include "Members.hpp" // --- This is the colleciton of member functions ( kickfunc and kickjac for now ) --- //
-#include "FuncJac.hpp" // --- This defines kickfunc and kickjac
-
-// my preprocessor defs
-
-// gsl_blas defs
-#define DAGGAR CblasConjTrans
-#define TRANS CblasTrans
-#define NOTRANS CblasNoTrans
-#define RIGHT CblasRight
-#define LEFT CblasLeft
-#define UPPER CblasUpper
-#define LOWER CblasLower
- */
 
 using namespace std::complex_literals;
+typedef boost::numeric::ublas::matrix boost_mat;
+typedef boost::numeric::ublas::vector boost_vec;
 
 class jKickPropagator
 {
+	friend class Pulsetime;
+	friend class jEnsemble;
 	public:
 		KickPropagator(const size_t dimin);
 		~KickPropagator();
@@ -63,13 +52,14 @@ class jKickPropagator
 		bool build();
 		size_t dim;
 		boost::numeric::ublas::matrix<std::complex<double> > Umat;
-		//gsl_matrix_complex *UmatPtr;
-		//gsl_vector_complex *yPtr;
+		boost_mat< std::complex<double> > Umat;
 
+		/*
 		// use boost
 		vector_slice<vector<std::complex<double> > > Uslice;
 		gsl_vector_complex_view Ucol;
 		gsl_vector_complex_view Upart;
+		*/
 
 		double kickstepsize;
 
@@ -86,20 +76,24 @@ class jKickPropagator
 
 class jFreePropagator
 {
+	friend class jEnsemble;
+
 	public:
 		FreePropagator(const double dtinau);
 		~FreePropagator();
 
 		double & apply(double &t, std::vector< std::complex<double> > &y);
 		double & apply(double &t, const double &delta_tin, std::vector< std::complex< double> > &y);  
+		bool build(jEnsemble & jens);
+		bool build(jEnsemble & jens,const double & dt);
 
 	private:
 		void build();
 
 		size_t dim;
-		std::vector< std::complex<double> > Uvec:
+		boost_vec< std::complex<double> > Uvec:
 
-			double dt;
+		double m_dt;
 };
 
 

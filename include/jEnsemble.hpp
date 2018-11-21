@@ -9,6 +9,7 @@
 #include <Constants.hpp>
 #include <DataOps.hpp>
 #include <Molecules.hpp>
+#include <Propagators.hpp>
 
 using DataOps::operator<<;
 
@@ -16,6 +17,8 @@ using DataOps::operator<<;
 class jEnsemble {
 
 friend class Molecules;
+friend class jKickPropagator;
+friend class jFreePropagator;
 
 public:
 
