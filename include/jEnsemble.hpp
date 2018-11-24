@@ -16,9 +16,7 @@ using DataOps::operator<<;
 
 class jEnsemble {
 
-friend class Molecules;
-friend class jKickPropagator;
-friend class jFreePropagator;
+	friend class Molecules;
 
 public:
 

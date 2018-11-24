@@ -56,13 +56,13 @@ bool Molecules::fill(vEnsemble & vens)
 		case oo :
 			// from JOURNAL OF MOLECULAR SPECTROSCOPY 154,372-382 ( 1992) G. ROUILLE "High-Resolution Stimulated Raman Spectroscopy of O2"
 			ens = {1556.38991/2.0, 1556.38991, 1532.86724, 1509.5275};
-			for (unsigned v=1;v<ens.size();++v){ ens[v] += ens[v-1]; }
+			for (size_t v=1;v<ens.size();++v){ ens[v] += ens[v-1]; }
 
 		case ii :
 			cc = {214.5481, -0.616259, 7.507e-5, -1.263643e-4, 6.198129e-6, -2.0255975e-7, 3.9662824e-9, -4.6346554e-11, 2.9330755e-13, -7.61000e-16};
 			ens.resize(cc.size(),DType(0));
-			for (unsigned v=0;v<ens.size();++v){
-				for(unsigned n=0;n<cc.size();n++){
+			for (size_t v=0;v<ens.size();++v){
+				for(size_t n=0;n<cc.size();n++){
 					ens[v] += cc[n] * std::pow(DType(v + 0.5) , int(n + 1));
 				}
 			}
@@ -79,7 +79,7 @@ bool Molecules::fill(vEnsemble & vens)
 }
 
 template <typename DType>
-DType & Molecules::jmultiplicity(const unsigned j)
+DType & Molecules::jmultiplicity(const size_t j)
 {
 	switch (this->m_id){
 		case nno:
@@ -112,6 +112,7 @@ bool Molecules::fill(jEnsemble & jens)
 	std::vector<DType> Bv;
 	std::vector<DType> Dv;
 	std::vector<DType> Hv;
+	size_t v;
 
 	switch (this->m_id){
 		case nno:
@@ -123,8 +124,8 @@ bool Molecules::fill(jEnsemble & jens)
 
 			assert(Bv.size() == Dv.size());
 			assert(Bv.size() == Hv.size());
-			size_t v = std::min(Bv.size()-1,jens.v);
-			for (unsigned j=0;j<jens.ej.size();++j){
+			v = std::min(Bv.size()-1,jens.v);
+			for (size_t j=0;j<jens.ej.size();++j){
 				jens.ej[j] = 
 					( Bv[v]*j*(j+1)
 					  - Dv[v]*std::pow(j,int(2))*std::pow(j+1,int(2)) 
@@ -140,8 +141,8 @@ bool Molecules::fill(jEnsemble & jens)
 
 			assert(Bv.size() == Dv.size());
 			assert(Bv.size() == Hv.size());
-			size_t v = std::min(Bv.size()-1,jens.v);
-			for (unsigned j=0;j<jens.ej.size();j++){
+			v = std::min(Bv.size()-1,jens.v);
+			for (size_t j=0;j<jens.ej.size();j++){
 				jens.ej[j] = 
 					( Bv[v]*j*(j+1)
 					- Dv[v]*std::pow(j,int(2))*std::pow(j+1,int(2)) 
@@ -153,8 +154,8 @@ bool Molecules::fill(jEnsemble & jens)
 			// numbers come from Loftus and Kuprienie, J. Phys. Chem. ref. Data, Vol. 6, No. 1, 1977. p242
 			Bv = {1.98957, 1.972, 1.9548, 1.9374, 1.9200, 1.9022, 1.8845, 1.8666, 1.8488, 1.8310, 1.8131, 1.7956, 1.7771, 1.7590, 1.7406, 1.7223};
 			Dv = {1e-6*5.75};
-			size_t v = std::min(Bv.size()-1,jens.v);
-			for (unsigned j=0;j<jens.ej.size();++j){
+			v = std::min(Bv.size()-1,jens.v);
+			for (size_t j=0;j<jens.ej.size();++j){
 				jens.ej[j] = 
 					( Bv[v]*j*(j+1)
 					  - Dv[0]*std::pow(j,int(2))*std::pow(j+1,int(2))
@@ -165,8 +166,8 @@ bool Molecules::fill(jEnsemble & jens)
 			Bv = {1.437676476, 1.42186454, 1.4061199, 1.39042};
 			Dv = {4.84256e-6, 4.8418e-6, 4.8410e-6, 4.8402e-6};
 			Hv = {2.8e-12};
-			size_t v = std::min(Dv.size()-1,jens.v);
-			for (unsigned j=0;j<jens.ej.size();++j){
+			v = std::min(Dv.size()-1,jens.v);
+			for (size_t j=0;j<jens.ej.size();++j){
 				jens.ej[j] = 
 					( Bv[v]*j*(j+1)
 					- Dv[v]*std::pow(j,int(2))*std::pow(j+1,int(2)) 
@@ -184,7 +185,7 @@ bool Molecules::fill(jEnsemble & jens)
 				+ 1.7e-11*(DType(v)+0.5) 
 				+ 7e-12*std::pow(DType(v)+0.5,int(2))
 			};
-			for (unsigned j=0;j<jens.ej.size();++j){
+			for (size_t j=0;j<jens.ej.size();++j){
 				jens.ej[j] = ( Bv[0]*j*(j+1) - Dv[0]*std::pow(j,int(2))*std::pow(j+1,int(2)) ) / Constants::icmPau<DType>() ; // in atomic units
 			}
 		default:

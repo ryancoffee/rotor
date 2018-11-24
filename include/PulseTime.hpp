@@ -42,30 +42,31 @@ class PulseTime {
 
 		inline bool getenvelope(const double t,double &FF,double &dFFdt) 
 		{
-			if ( inpulse(t) ){
-				FF = strength * ( std::pow( cos(half_pi<double>()*(t-t0)/Ctau) , int(2)) );
-				dFFdt = -strength/2 * ( pi<double>()/Ctau * sin(pi<double>()*(t-t0)/Ctau));
+			if ( !inpulse(t) ){
+				FF = 0.0;
+				dFFdt = 0.0;
+				return false;
+			} else {
+				FF = strength * ( std::pow( std::cos(half_pi<double>()*(t-t0)/Ctau) , int(2)) );
+				dFFdt = -strength/2 * ( pi<double>()/Ctau * std::sin(pi<double>()*(t-t0)/Ctau));
 				return true;
 			}
-			FF = 0.0;
-			dFFdt = 0.0;
-			return false;
 		}
 		inline bool getenvelope(const double t,double &FF) 
 		{
-			if ( inpulse(t) ){
-				*FF = strength * ( std::pow( cos(half_pi<double>()*(t-t0)/Ctau),int(2) ) );
-				return true;
-			} else {
-				*FF = 0.0;
+			if ( !inpulse(t) ){
+				FF = 0.0;
 				return false;
+			} else {
+				FF = strength * ( std::pow( std::cos(half_pi<double>()*(t-t0)/Ctau),int(2) ) );
+				return true;
 			}
 		}
 
 	private:
 		double strength, Ctau, t0;
 
-		inline bool inpulse(const double t) { return (t >= -Ctau && t <= Ctau);	}
+		inline bool inpulse(const double t) { return ((t-t0) >= -Ctau && (t-t0) <= Ctau); }
 };
 
 #endif

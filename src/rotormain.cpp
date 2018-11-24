@@ -26,11 +26,9 @@
 // my headers
 #include <Constants.hpp>
 #include <Molecules.hpp>
-/*
 #include <jEnsemble.hpp>
 #include <vEnsemble.hpp>
 #include <Propagator.hpp>
-*/
 
 // my preprocessor defs
 

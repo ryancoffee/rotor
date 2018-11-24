@@ -7,9 +7,9 @@
 #include <vEnsemble.hpp>
 #include <jEnsemble.hpp>
 
+class jEnsemble;
 
 class Molecules {
-
 
 	public:
 
@@ -23,7 +23,7 @@ template <typename DType>
 template <typename DType>
 	bool fill(jEnsemble & jens);
 template <typename DType>
-	DType & jmultiplicity(const unsigned j);
+	DType & jmultiplicity(const size_t j);
 template <typename DType>
 	DType kT(void){return m_kT;}
 

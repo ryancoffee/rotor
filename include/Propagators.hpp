@@ -14,6 +14,9 @@
 #include <cmath>
 #include <vector>
 #include <complex>
+#include <exception>
+
+// boost includes
 #include <boost/numeric/odeint.hpp>
 #include <boost/numeric/ublas/vector.hpp>
 #include <boost/numeric/ublas/matrix.hpp>
@@ -26,37 +29,51 @@
 #include <PulseTime.hpp> // --- this handels the pulse envelope parameters like strength, duration and t0, and returns fales of FF and dFFdt --- //
 #include <jEnsemble.hpp>
 
-using namespace std::complex_literals;
-typedef boost::numeric::ublas::matrix boost_mat;
-typedef boost::numeric::ublas::vector boost_vec;
+using std::complex_literals::operator""i;
+// seems the 
+namespace boost_blas = boost::numeric::ublas;
+
+class jEnsemble;
+class PulseTime;
 
 class jKickPropagator
 {
-	friend class Pulsetime;
+	friend class PulseTime;
 	friend class jEnsemble;
 	public:
-		KickPropagator(const size_t dimin);
-		~KickPropagator();
+		jKickPropagator(const size_t dimin);
+		~jKickPropagator();
 
+		inline bool apply(double &t,boost_blas::vector< std::complex<double> > &yin)
+		{
+			try {
+			boost_blas::hermitian_adaptor<boost_blas::matrix<std::complex<double> >, boost_blas::lower> hal (Umat);
+			auto temp = boost_blas::prod(hal,yin);
+			yin = temp;
+			t += kickstepsize;
+			} catch (std::exception &e) {
+				std::cerr << e.what() << "\n" << std::flush;
+				return false;
+			}
+			return true;
+		}
 		inline bool apply(double &t,std::vector< std::complex<double> > &yin)
 		{
-			//    clog << "kicker.apply(t,dt,yPTr) is in question" << endl;
 			bool wasapplied = false;
-			gsl_blas_ztrmv(UPPER,NOTRANS,CblasNonUnit,UmatPtr,yinPtr);
-			t += kickstepsize;
-			//    clog << "\t\t\t... kicker.apply(t,dt,yPTr) is OK" << endl;
+			boost_blas::vector<std::complex<double> > y(yin.size(),*yin.data());
+			wasapplied = apply(t,y);
+			std::copy(y.begin(),y.end(),yin.begin());
 			return wasapplied;
 		}
 
 	private:
 		bool build();
 		size_t dim;
-		boost::numeric::ublas::matrix<std::complex<double> > Umat;
-		boost_mat< std::complex<double> > Umat;
+		boost_blas::matrix<std::complex<double> > Umat;
+		//boost_blas::vector_slice< boost_blas::vector <std::complex <double> > Uslice;
 
 		/*
 		// use boost
-		vector_slice<vector<std::complex<double> > > Uslice;
 		gsl_vector_complex_view Ucol;
 		gsl_vector_complex_view Upart;
 		*/
@@ -76,14 +93,17 @@ class jKickPropagator
 
 class jFreePropagator
 {
+	friend class PulseTime;
 	friend class jEnsemble;
 
 	public:
-		FreePropagator(const double dtinau);
-		~FreePropagator();
+		jFreePropagator(const double dtinau);
+		~jFreePropagator();
 
-		double & apply(double &t, std::vector< std::complex<double> > &y);
-		double & apply(double &t, const double &delta_tin, std::vector< std::complex< double> > &y);  
+		bool apply(double &t, boost_blas::vector< std::complex<double> > &y);
+		bool apply(double &t, const double &delta_tin, boost_blas::vector< std::complex< double> > &y);  
+		bool apply(double &t, std::vector< std::complex<double> > &y);
+		bool apply(double &t, const double &delta_tin, std::vector< std::complex< double> > &y);  
 		bool build(jEnsemble & jens);
 		bool build(jEnsemble & jens,const double & dt);
 
@@ -91,7 +111,7 @@ class jFreePropagator
 		void build();
 
 		size_t dim;
-		boost_vec< std::complex<double> > Uvec:
+		boost_blas::vector< std::complex<double> > Uvec;
 
 		double m_dt;
 };
