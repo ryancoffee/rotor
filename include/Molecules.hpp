@@ -19,9 +19,9 @@ class Molecules {
 	~Molecules(void);
 
 template <typename DType>
-	bool fill(vEnsemble & vens);
+	bool fill(vEnsemble & vens,const size_t fillstart = 0);
 template <typename DType>
-	bool fill(jEnsemble & jens);
+	bool fill(jEnsemble & jens,const size_t fillstart = 0);
 template <typename DType>
 	DType & jmultiplicity(const size_t j);
 template <typename DType>
@@ -30,6 +30,8 @@ template <typename DType>
 	inline void setkT(float kTin) {m_kT = kTin * Constants::kb<float>()/Constants::Eh<float>();}
 template <typename DType>
 	size_t initdist(vEnsemble & vens);
+template <typename DType>
+	size_t updatedist(jEnsemble & jens,const size_t fillstart = 0);
 template <typename DType>
 	size_t initdist(jEnsemble & jens);
 template <typename DType>

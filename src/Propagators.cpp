@@ -28,6 +28,7 @@ jKickPropagator::~jKickPropagator()
 
 double & jKickPropagator::apply(double &t, std::vector< std::complex<double> > &y)
 {
+	// We may want to jEnsemble::checkgrowth somewhere in here
 	// add phase = -(Ej-Ejstart)dt to coeffs
 	y = std::exp();
 	std::transform(y.begin,y.end,jens.ej.begin + jstart);

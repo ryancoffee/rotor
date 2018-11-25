@@ -298,6 +298,14 @@ int main(int argc, char *argv[]) {
 								}
 							}
 						}
+
+						*/
+
+						size_t oldsize = jens.size();
+						if (jens.checkgrowth()){molecule.fill(jens,oldsize)}
+
+						/*
+
 						addtosignal(y,signal,imsignal,tind,&params);
 
 						passt = t;

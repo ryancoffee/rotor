@@ -39,10 +39,9 @@ std::string & Molecules::getMolIDstring(void)
 */
 
 template <typename DType>
-bool Molecules::fill(vEnsemble & vens)
+bool Molecules::fill(vEnsemble & vens,const size_t fillstart)
 {
 	std::vector<DType> ens;
-	std::vector<DType> cc;
 	switch (this->m_id){
 		case nno :
 			// From Bohlin et al., J. Raman Spect. v43 p604 (2012)
@@ -56,12 +55,13 @@ bool Molecules::fill(vEnsemble & vens)
 		case oo :
 			// from JOURNAL OF MOLECULAR SPECTROSCOPY 154,372-382 ( 1992) G. ROUILLE "High-Resolution Stimulated Raman Spectroscopy of O2"
 			ens = {1556.38991/2.0, 1556.38991, 1532.86724, 1509.5275};
-			for (size_t v=1;v<ens.size();++v){ ens[v] += ens[v-1]; }
+			for (size_t v=fillstart+1;v<ens.size();++v){ ens[v] += ens[v-1]; }
 
 		case ii :
+			std::vector<DType> cc;
 			cc = {214.5481, -0.616259, 7.507e-5, -1.263643e-4, 6.198129e-6, -2.0255975e-7, 3.9662824e-9, -4.6346554e-11, 2.9330755e-13, -7.61000e-16};
 			ens.resize(cc.size(),DType(0));
-			for (size_t v=0;v<ens.size();++v){
+			for (size_t v=fillstart;v<ens.size();++v){
 				for(size_t n=0;n<cc.size();n++){
 					ens[v] += cc[n] * std::pow(DType(v + 0.5) , int(n + 1));
 				}
@@ -72,9 +72,11 @@ bool Molecules::fill(vEnsemble & vens)
 
 	}
 
-	if (vens.ev.size() > ens.size()){ vens.ev.resize(ens.size()); }
-	std::copy_n(ens.begin,vens.ev.size(),std::back_inserter(vens.ev));
-	vens.ev /= Constants::icmPau<DType>();
+	ens /= Constants::icmPau<DType>();
+	if (vens.ev.size() > ens.size()){ 
+		vens.ev.resize(ens.size()); 
+	}
+	std::copy(ens.begin()+fillstart,ens.end(),vens.ev.begin()+fillstart);
 	return true;
 }
 
@@ -107,7 +109,7 @@ DType & Molecules::jmultiplicity(const size_t j)
 */
 
 template <typename DType>
-bool Molecules::fill(jEnsemble & jens)
+bool Molecules::fill(jEnsemble & jens,const size_t fillstart)
 {
 	std::vector<DType> Bv;
 	std::vector<DType> Dv;
@@ -125,7 +127,7 @@ bool Molecules::fill(jEnsemble & jens)
 			assert(Bv.size() == Dv.size());
 			assert(Bv.size() == Hv.size());
 			v = std::min(Bv.size()-1,jens.v);
-			for (size_t j=0;j<jens.ej.size();++j){
+			for (size_t j=fillstart;j<jens.ej.size();++j){
 				jens.ej[j] = 
 					( Bv[v]*j*(j+1)
 					  - Dv[v]*std::pow(j,int(2))*std::pow(j+1,int(2)) 
@@ -142,7 +144,7 @@ bool Molecules::fill(jEnsemble & jens)
 			assert(Bv.size() == Dv.size());
 			assert(Bv.size() == Hv.size());
 			v = std::min(Bv.size()-1,jens.v);
-			for (size_t j=0;j<jens.ej.size();j++){
+			for (size_t j=fillstart;j<jens.ej.size();j++){
 				jens.ej[j] = 
 					( Bv[v]*j*(j+1)
 					- Dv[v]*std::pow(j,int(2))*std::pow(j+1,int(2)) 
@@ -155,7 +157,7 @@ bool Molecules::fill(jEnsemble & jens)
 			Bv = {1.98957, 1.972, 1.9548, 1.9374, 1.9200, 1.9022, 1.8845, 1.8666, 1.8488, 1.8310, 1.8131, 1.7956, 1.7771, 1.7590, 1.7406, 1.7223};
 			Dv = {1e-6*5.75};
 			v = std::min(Bv.size()-1,jens.v);
-			for (size_t j=0;j<jens.ej.size();++j){
+			for (size_t j=fillstart;j<jens.ej.size();++j){
 				jens.ej[j] = 
 					( Bv[v]*j*(j+1)
 					  - Dv[0]*std::pow(j,int(2))*std::pow(j+1,int(2))
@@ -167,7 +169,7 @@ bool Molecules::fill(jEnsemble & jens)
 			Dv = {4.84256e-6, 4.8418e-6, 4.8410e-6, 4.8402e-6};
 			Hv = {2.8e-12};
 			v = std::min(Dv.size()-1,jens.v);
-			for (size_t j=0;j<jens.ej.size();++j){
+			for (size_t j=fillstart;j<jens.ej.size();++j){
 				jens.ej[j] = 
 					( Bv[v]*j*(j+1)
 					- Dv[v]*std::pow(j,int(2))*std::pow(j+1,int(2)) 
@@ -185,7 +187,7 @@ bool Molecules::fill(jEnsemble & jens)
 				+ 1.7e-11*(DType(v)+0.5) 
 				+ 7e-12*std::pow(DType(v)+0.5,int(2))
 			};
-			for (size_t j=0;j<jens.ej.size();++j){
+			for (size_t j=fillstart;j<jens.ej.size();++j){
 				jens.ej[j] = ( Bv[0]*j*(j+1) - Dv[0]*std::pow(j,int(2))*std::pow(j+1,int(2)) ) / Constants::icmPau<DType>() ; // in atomic units
 			}
 		default:
@@ -197,7 +199,26 @@ bool Molecules::fill(jEnsemble & jens)
 }
 
 template <typename DType>
-size_t Molecules::initdist(jEnsemble & jens){
+size_t Molecules::updatedist(jEnsemble & jens,const size_t fillstart)
+{
+	size_t  j = 0;
+	DType kT = m_kT;
+	jens.pj.assign(jens.ej.begin()+fillstart,jens.ej.end());
+	std::transform(jens.pj.begin()+fillstart, jens.pj.end(), jens.pj.begin()+fillstart, 
+			[&j,&kT](DType x){
+				DType val = (x/kT>DType(0.1) ? std::exp(-x/kT) : 1+std::expm1(-x/kT) );
+				val *= jmultiplicity<DType>(j)(2*(j)+1);
+				j++;
+				return val;
+				}
+		      );
+	DataOps::safe_normalize(jens.pj);
+	return jens.pj.size();
+}
+
+template <typename DType>
+size_t Molecules::initdist(jEnsemble & jens)
+{
 	size_t  j = 0;
 	DType kT = m_kT;
 	jens.pj.assign(jens.ej.begin(),jens.ej.end());

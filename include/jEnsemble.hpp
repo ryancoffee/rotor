@@ -16,8 +16,6 @@ using DataOps::operator<<;
 
 class jEnsemble {
 
-	friend class Molecules;
-
 public:
 
 	jEnsemble(size_t njsin,size_t vin);
@@ -25,16 +23,18 @@ public:
 
 	inline int setm(const int min){m=min; return m;}
 	inline size_t setv(const size_t vin){v=vin; return v;}
+	inline double set_pthresh(const double th=0.05){m_pthresh = th;return m_pthresh;}
 
 	double getpop(void);
 	void normalize(void);
-	size_t limitpops(double thresh);
+	bool checkgrowth(void);
+	inline size_t size(void){return m_njs;}
 
-	size_t initdist(void);
         inline void printdist(std::ofstream & of) { of << pj;}
 
 
 private:
+	double m_pthresh;
 	size_t m_realj;
 	size_t v;
 	int m;
@@ -48,8 +48,7 @@ private:
 
 
 protected:
-	bool checkgrowth(void);
-	void fill6j(const size_t oldsz = 0);
+	void fill6js(const size_t oldsz);
 };
 
 #endif  
