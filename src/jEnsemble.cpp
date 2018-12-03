@@ -2,10 +2,6 @@
 #include <jEnsemble.hpp>
 #include <algorithm>
 
-using Constants::kb;
-using Constants::Eh;
-
-
 jEnsemble::jEnsemble(size_t njsin = 50,size_t vin = 0)
 : m_njs(njsin)
 , v(vin)
@@ -23,12 +19,11 @@ jEnsemble::~jEnsemble(void)
 bool jEnsemble::checkgrowth(void)
 {
 	const float buffer(0.1); // setting 10% of length as the buffer size, we will grow the vector by 2x of this 
-	unsigned bufferi;
-	unsigned oldsz = pj.size();
-	bufferi = unsigned(oldsz * (1.- buffer));
-	unsigned newsize;
+	size_t bufferi;
+	size_t oldsz = pj.size();
+	bufferi = size_t (oldsz * (1.- buffer));
 	if ( pj[bufferi] > m_pthresh ) {
-		newsize = unsigned(oldsz * (1. + 2.*buffer));
+		size_t newsize = size_t(oldsz * (1. + 2.*buffer));
 		pj.resize(newsize,double(0));
 		ej.resize(newsize);
 		aajm.resize(newsize,double(0));

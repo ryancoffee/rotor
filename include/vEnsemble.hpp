@@ -12,38 +12,35 @@
 using DataOps::operator<<;
 
 class Molecules;
+bool Molecules::fill(vEnsemble & vens, const size_t fillstart);
+size_t Molecules::initdist(vEnsemble & vens);
+size_t Molecules::updatedist(vEnsemble & vens, const size_t start);
+size_t Molecules::limitpops(vEnsemble & vens, const double thresh);
 
 class vEnsemble {
-
-	friend class Molecules;
-
+	friend bool Molecules::fill(vEnsemble & vens, const size_t fillstart);
+	friend size_t Molecules::initdist(vEnsemble & vens);
+	friend size_t Molecules::updatedist(vEnsemble & vens, const size_t start);
+	friend size_t Molecules::limitpops(vEnsemble & vens, const double thresh);
 public:
 
-	vEnsemble(size_t nvibsin,Molecules * molPtrin);
+	vEnsemble(size_t nvibsin);
 	~vEnsemble(void);
-	void setkT(float kTinauin);
-	inline Molecules * setmolecule(Molecules * molPtrin){ m_molPtr = molPtrin; return m_molPtr;}
 
 	size_t limitpops(double thresh = std::nextafter(double(0),double(1)));
 	size_t initdist(void);
 	double getpop(void);
 	void normalize(void);
-	inline void printdist(std::ofstream & of) {of << pv;}
 	bool checkgrowth(void);
-
+	inline size_t size(void){return m_nvs;}
+	inline void printdist(std::ofstream & of) {of << pv;}
+	inline double set_pthresh(const double th=0.05){m_pthresh = th;return m_pthresh;}
 
 private:
+	size_t m_nvs;
+	double m_pthresh;
 
-	Molecules * m_molPtr;
-	
-	size_t setenergies(Molecules * molPtrin);
-
-	size_t v;
-	size_t m_nvibs;
-
-	double kTinauin;
 	std::vector<double> pv;
-	std::vector<double> pvnew;
 	std::vector<double> ev;
 
 };

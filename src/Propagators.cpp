@@ -26,7 +26,7 @@ jKickPropagator::~jKickPropagator()
 {
 }
 
-double & jKickPropagator::apply(double &t, std::vector< std::complex<double> > &y)
+double & jKickPropagator::apply(jEnsemble jens, double &t, std::vector< std::complex<double> > &y)
 {
 	// We may want to jEnsemble::checkgrowth somewhere in here
 	// add phase = -(Ej-Ejstart)dt to coeffs
@@ -191,7 +191,7 @@ inline double jFreePropagator::apply(jEnsemble & jens,std::vector<std::complex> 
 }
 inline double jFreePropagator::apply(jEnsemble & jens,std::vector<std::complex> > & yin, double &t, const double & delta_tin)
 {
-	std::transform(jens.begin()+jens.m,jens.end(),y.begin(),y.begin(),
+	std::transform(jens.ej.begin()+jens.m,jens.ej.end(),y.begin(),y.begin(),
 		[delta_tin](double & z, std::complex & y){return y * std::polar(1.0,-dt*z)}
 	);
 	return t;
@@ -201,7 +201,7 @@ inline double jFreePropagator::apply(jEnsemble & jens,std::vector<std::complex> 
 void jFreePropagator::build(jEnsemble & jens,const double & dt)
 {
 	Uvec.resize(jens.ej.size()-jens.m);
-	std::transform(jens.begin()+jens.m,jens.end(),Uvec.begin()
+	std::transform(jens.ej.begin()+jens.m,jens.ej.end(),Uvec.begin()
 			[dt](double &z) -> std::complex<double> { return std::polar(1.0,-dt*z) ;}
 		      );
 	return true;

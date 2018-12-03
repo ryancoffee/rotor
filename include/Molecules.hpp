@@ -8,6 +8,7 @@
 #include <jEnsemble.hpp>
 
 class jEnsemble;
+class vEnsemble;
 
 class Molecules {
 

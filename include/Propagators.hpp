@@ -38,10 +38,8 @@ class PulseTime;
 
 class jKickPropagator
 {
-	friend class PulseTime;
-	friend class jEnsemble;
 	public:
-		jKickPropagator(const size_t dimin);
+		jKickPropagator(jEnsemble & jens);
 		~jKickPropagator();
 
 		inline bool apply(double &t,boost_blas::vector< std::complex<double> > &yin)
@@ -66,8 +64,9 @@ class jKickPropagator
 			return wasapplied;
 		}
 
+		bool build(jEnsemble & jens,PulseTime & pulse);
+
 	private:
-		bool build();
 		size_t dim;
 		boost_blas::matrix<std::complex<double> > Umat;
 		//boost_blas::vector_slice< boost_blas::vector <std::complex <double> > Uslice;
@@ -108,8 +107,6 @@ class jFreePropagator
 		bool build(jEnsemble & jens,const double & dt);
 
 	private:
-		void build();
-
 		size_t dim;
 		boost_blas::vector< std::complex<double> > Uvec;
 
