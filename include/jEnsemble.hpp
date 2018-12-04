@@ -14,6 +14,9 @@
 using DataOps::operator<<;
 
 class Molecules;
+class jKickPropagator;
+class jFreePropagator;
+/*
 bool Molecules::fill(jEnsemble & , const size_t);
 size_t Molecules::initdist(jEnsemble & );
 size_t Molecules::updatedist(jEnsemble & , const size_t);
@@ -23,8 +26,10 @@ bool jKickPropagator::build(jEnsemble &);
 bool jKickPropagator::build(jEnsemble &,const double);
 bool jFreePropagator::build(jEnsemble &);
 bool jFreePropagator::build(jEnsemble &,const double);
+*/
 
 class jEnsemble {
+	/*
 	friend bool Molecules::fill(jEnsemble & , const size_t);
 	friend size_t Molecules::initdist(jEnsemble & );
 	friend size_t Molecules::updatedist(jEnsemble & , const size_t);
@@ -34,6 +39,10 @@ class jEnsemble {
 	friend bool jKickPropagator::build(jEnsemble &,const double);
 	friend bool jFreePropagator::build(jEnsemble &);
 	friend bool jFreePropagator::build(jEnsemble &,const double);
+	*/
+	friend class Molecules;
+	friend class jKickPropagator;
+	friend class jFreePropagator;
 
 public:
 

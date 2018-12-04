@@ -12,16 +12,21 @@
 using DataOps::operator<<;
 
 class Molecules;
+/*
 bool Molecules::fill(vEnsemble & vens, const size_t fillstart);
 size_t Molecules::initdist(vEnsemble & vens);
 size_t Molecules::updatedist(vEnsemble & vens, const size_t start);
 size_t Molecules::limitpops(vEnsemble & vens, const double thresh);
+*/
 
 class vEnsemble {
+	/*
 	friend bool Molecules::fill(vEnsemble & vens, const size_t fillstart);
 	friend size_t Molecules::initdist(vEnsemble & vens);
 	friend size_t Molecules::updatedist(vEnsemble & vens, const size_t start);
 	friend size_t Molecules::limitpops(vEnsemble & vens, const double thresh);
+	*/
+	friend class Molecules;
 public:
 
 	vEnsemble(size_t nvibsin);
