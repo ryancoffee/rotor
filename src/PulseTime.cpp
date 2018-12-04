@@ -1,15 +1,15 @@
-// Pulse class implementation
+// PulseTime class implementation
 
 // my headers
-#include "PulseTime.hpp"
+#include <PulseTime.hpp>
 
 using namespace Constants;
 
 void PulseTime::adddelay(const double in)
 {
-	t0 += in / fsPau<double>()'
+	t0 += in / fsPau<double>();
 }
-void PUlseTime::scalestrength(const double in)
+void PulseTime::scalestrength(const double in)
 {
 	strength *= in;
 }
