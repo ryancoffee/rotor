@@ -32,9 +32,32 @@
 using std::complex_literals::operator""i;
 // seems the 
 namespace boost_blas = boost::numeric::ublas;
+typedef typename boost::numeric::ublas::vector< std::complex <double> > cvec_t;
+typedef typename boost::numeric::ublas::matrix< std::complex <double> > cmat_t;
 
 class jEnsemble;
 class PulseTime;
+
+class jFreePropagator
+{
+	friend class PulseTime;
+	friend class jEnsemble;
+
+	public:
+		jFreePropagator(jEnsemble & jens,const double dtinau);
+		~jFreePropagator();
+
+		inline double apply(jEnsemble & jens,cvec_t & yin, double &t);
+		inline double apply(jEnsemble & jens,cvec_t & yin, double &t, const double & delta_tin);
+		bool build(jEnsemble & jens);
+		bool build(jEnsemble & jens,const double & dt);
+
+	private:
+		size_t dim;
+		cvec_t Uvec;
+
+		double m_dt;
+};
 
 class jKickPropagator
 {
@@ -42,10 +65,10 @@ class jKickPropagator
 		jKickPropagator(jEnsemble & jens);
 		~jKickPropagator();
 
-		inline bool apply(double &t,boost_blas::vector< std::complex<double> > &yin)
+		inline bool apply(double &t, cvec_t &yin)
 		{
 			try {
-			boost_blas::hermitian_adaptor<boost_blas::matrix<std::complex<double> >, boost_blas::lower> hal (Umat);
+			boost_blas::hermitian_adaptor< cmat_t , boost_blas::lower> hal (Umat);
 			auto temp = boost_blas::prod(hal,yin);
 			yin = temp;
 			t += kickstepsize;
@@ -55,20 +78,12 @@ class jKickPropagator
 			}
 			return true;
 		}
-		inline bool apply(double &t,std::vector< std::complex<double> > &yin)
-		{
-			bool wasapplied = false;
-			boost_blas::vector<std::complex<double> > y(yin.size(),*yin.data());
-			wasapplied = apply(t,y);
-			std::copy(y.begin(),y.end(),yin.begin());
-			return wasapplied;
-		}
 
 		bool build(jEnsemble & jens,PulseTime & pulse);
 
 	private:
 		size_t dim;
-		boost_blas::matrix<std::complex<double> > Umat;
+		cmat_t Umat;
 		//boost_blas::vector_slice< boost_blas::vector <std::complex <double> > Uslice;
 
 		/*
@@ -89,29 +104,6 @@ class jKickPropagator
 
 
 
-
-class jFreePropagator
-{
-	friend class PulseTime;
-	friend class jEnsemble;
-
-	public:
-		jFreePropagator(const double dtinau);
-		~jFreePropagator();
-
-		bool apply(double &t, boost_blas::vector< std::complex<double> > &y);
-		bool apply(double &t, const double &delta_tin, boost_blas::vector< std::complex< double> > &y);  
-		bool apply(double &t, std::vector< std::complex<double> > &y);
-		bool apply(double &t, const double &delta_tin, std::vector< std::complex< double> > &y);  
-		bool build(jEnsemble & jens);
-		bool build(jEnsemble & jens,const double & dt);
-
-	private:
-		size_t dim;
-		boost_blas::vector< std::complex<double> > Uvec;
-
-		double m_dt;
-};
 
 
 #endif

@@ -36,9 +36,10 @@ class PulseTime {
 		void sett0(const double in);
 		void adddelay(const double in);
 
-		inline double getstrength() { return strength; }
-		inline double getCtau() { return Ctau; }
-		inline double gett0() { return t0; }
+		inline double getstrength(void) { return strength; }
+		inline double getCtau(void) { return Ctau; }
+		inline double gett0(void) { return t0; }
+		inline double getduration(void) { return 2.0*Ctau; }
 
 		inline bool getenvelope(const double t,double &FF,double &dFFdt) 
 		{
