@@ -8,14 +8,18 @@
 #include <string>
 
 
-int main(void){
+int main(int argc, char* argv[]){
 	std::cout << "OK, I'm here and alive\n\t ;-)\n" << std::flush;
 
 	double start_time = 0.0;
-	double stop_time = 30.0;
+	double stop_time = 60.0;
 	double step_time = 1.1;
 
 	harm_osc ho(0.15);
+	
+	if (argc > 1){
+		stop_time = double(atof(argv[1]));
+	}
 
 	state_type x(2);
 	x[0] = 1.;
@@ -46,7 +50,7 @@ int main(void){
 	std::ofstream outfile(filename.c_str(),std::ios::out);
 	outfile << "#here is something?" << std::endl;
 	for(size_t i; i<x_vec.size(); ++i){
-		std::cout << times[i] << "\t" << x_vec[i][0] << "\t" << x_vec[i][1] << "\n";
+	//	std::cout << times[i] << "\t" << x_vec[i][0] << "\t" << x_vec[i][1] << "\n";
 		outfile << times[i] << "\t" << x_vec[i][0] << "\t" << x_vec[i][1] << "\n";
 	}
 	std::cout << std::flush;
@@ -77,8 +81,8 @@ int main(void){
 	outfile.open(filename.c_str(),std::ios::out);
 	outfile << "#here is something?" << std::endl;
 	for(size_t i; i<z_vec.size(); ++i){
-		std::cout << newtimes[i] << "\t" << z_vec[i][0].real() << "\t" << z_vec[i][1].real() 
-			<< "\t" << z_vec[i][0].imag()<< "\t" << z_vec[i][1].imag() << "\n";
+	//	std::cout << newtimes[i] << "\t" << z_vec[i][0].real() << "\t" << z_vec[i][1].real() 
+	//		<< "\t" << z_vec[i][0].imag()<< "\t" << z_vec[i][1].imag() << "\n";
 		outfile << newtimes[i] << "\t" << z_vec[i][0].real() << "\t" << z_vec[i][1].real() 
 			<< "\t" << z_vec[i][0].imag()<< "\t" << z_vec[i][1].imag() << "\n";
 	}

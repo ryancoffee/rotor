@@ -45,7 +45,7 @@ class charm_osc {
 	void operator() ( const cstate_type &x , cstate_type &dxdt , const double t )
 	{
 		dxdt[0] = x[1];
-		dxdt[1] = -x[0] - m_gam*x[1];
+		dxdt[1] = -x[0] - m_gam*std::pow(std::cos(t*M_PI/30.),int(2))*x[1];
 	}
 };
 //]
