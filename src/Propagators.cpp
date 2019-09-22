@@ -31,17 +31,17 @@ inline double jFreePropagator::apply(jEnsemble & jens,cvec_t & yin, double &t)
 inline double jFreePropagator::apply(jEnsemble & jens,cvec_t & yin, double &t, const double & delta_tin)
 {
 	std::transform(jens.ej.begin()+jens.m,jens.ej.end(),yin.begin(),yin.begin(),
-		[delta_tin](double & z, std::complex & y){return y * std::polar(1.0,-dt*z)}
+		[&delta_tin](double & z, std::complex<double> & y){return y * std::polar(1.0,-delta_tin*z);}
 	);
 	return t;
 }
 
 // private:
-void jFreePropagator::build(jEnsemble & jens,const double & dt)
+bool jFreePropagator::build(jEnsemble & jens,const double & dt)
 {
 	Uvec.resize(jens.ej.size()-jens.m);
-	std::transform(jens.ej.begin()+jens.m,jens.ej.end(),Uvec.begin()
-			[dt](double &z) -> std::complex<double> { return std::polar(1.0,-dt*z) ;}
+	std::transform(jens.ej.begin()+jens.m,jens.ej.end(),Uvec.begin(),
+			[&dt](double &z) -> std::complex<double> { return std::polar(1.0,-dt*z) ;}
 		      );
 	return true;
 }
@@ -61,11 +61,23 @@ bool jFreePropagator::build(jEnsemble & jens)
 
 // --- This is the propagator that steps over the pulses.
 
+jKickPropagator::jKickPropagator(jEnsemble & jens,const double & pulsetime)
+: dim(jens.ej.size())
+, kickstepsize( pulsetime )
+{
+	Umat.resize(dim,dim);
+	m_state.resize(dim,0.);
+	m_stateHistory.resize(0);
+	m_timesHistory.resize(0);
+}
 jKickPropagator::jKickPropagator(jEnsemble & jens,PulseTime & pulse) 
 : dim( jens.ej.size())
 , kickstepsize( pulse.duration() )
 {
 	Umat.resize(dim,dim);
+	m_state.resize(dim,0.);
+	m_stateHistory.resize(0);
+	m_timesHistory.resize(0);
 }
 
 jKickPropagator::~jKickPropagator()
@@ -74,7 +86,9 @@ jKickPropagator::~jKickPropagator()
 
 bool jKickPropagator::build(jEnsemble & jens,PulseTime & pulse)
 {
-	//  clog << "\t\t\t ... Building kicker matrix ...\n\t\t\t\t\t.\n\t\t\t\t\t.\n\t\t\t\t\t.\n" << endl;
+	clog << "\t\t\t ... Building kicker matrix ...\n\t\t\t\t\t.\n\t\t\t\t\t.\n\t\t\t\t\t.\n" << endl;
+
+	HERE HERE HERE HERE
 
 	// allocate ode workspace
 	const gsl_odeiv_step_type *T = gsl_odeiv_step_rkf45;  // for a smooth step // gsl_odeiv_step_rk8pd;  // for a fast step

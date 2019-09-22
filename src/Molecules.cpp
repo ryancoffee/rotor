@@ -202,12 +202,13 @@ template <typename DType>
 size_t Molecules::updatedist(jEnsemble & jens,const size_t fillstart)
 {
 	size_t  j = 0;
+	DType mul = this->jmultiplicity<DType>(j);
 	DType kT = m_kT;
 	jens.pj.assign(jens.ej.begin()+fillstart,jens.ej.end());
 	std::transform(jens.pj.begin()+fillstart, jens.pj.end(), jens.pj.begin()+fillstart, 
-			[&j,&kT](DType x){
+			[&j,&kT,&mul](DType x){
 				DType val = (x/kT>DType(0.1) ? std::exp(-x/kT) : 1+std::expm1(-x/kT) );
-				val *= jmultiplicity<DType>(j)(2*(j)+1);
+				val *= mul*(2*(j)+1);
 				j++;
 				return val;
 				}
@@ -221,11 +222,12 @@ size_t Molecules::initdist(jEnsemble & jens)
 {
 	size_t  j = 0;
 	DType kT = m_kT;
+	DType mul = this->jmultiplicity<DType>(j);
 	jens.pj.assign(jens.ej.begin(),jens.ej.end());
 	std::transform(jens.pj.begin(), jens.pj.end(), jens.pj.begin(), 
-			[&j,&kT](DType x){
+			[&j,&kT,&mul](DType x){
 				DType val = (x/kT>DType(0.1) ? std::exp(-x/kT) : 1+std::expm1(-x/kT) );
-				val *= jmultiplicity<DType>(j)(2*(j)+1);
+				val *= mul*(2*(j)+1);
 				j++;
 				return val;
 				}

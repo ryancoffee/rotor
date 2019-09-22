@@ -45,6 +45,7 @@ class jFreePropagator
 
 	public:
 		jFreePropagator(jEnsemble & jens,const double dtinau);
+		jFreePropagator(jEnsemble & jens,const double dtinau);
 		~jFreePropagator();
 
 		inline double apply(jEnsemble & jens,cvec_t & yin, double &t);
@@ -62,7 +63,8 @@ class jFreePropagator
 class jKickPropagator
 {
 	public:
-		jKickPropagator(jEnsemble & jens);
+		jKickPropagator(jEnsemble & jens,const PulseTime & pulse);
+		jKickPropagator(jEnsemble & jens,const double & pulsetime)
 		~jKickPropagator();
 
 		inline bool apply(double &t, cvec_t &yin)
@@ -84,15 +86,14 @@ class jKickPropagator
 	private:
 		size_t dim;
 		cmat_t Umat;
+		cvec_t m_state;
+		double t;
 		//boost_blas::vector_slice< boost_blas::vector <std::complex <double> > Uslice;
 
-		/*
-		// use boost
-		gsl_vector_complex_view Ucol;
-		gsl_vector_complex_view Upart;
-		*/
-
 		double kickstepsize;
+
+		std::vector< cvec_t > m_stateHistory;
+		std::vector< double > m_tHistory;
 
 		void printUmat();
 		void printcornerUmat();

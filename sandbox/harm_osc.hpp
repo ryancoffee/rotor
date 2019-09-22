@@ -34,6 +34,7 @@ class harm_osc {
 		dxdt[1] = -x[0] - m_gam*x[1];
 	}
 };
+
 class charm_osc {
 
 	double m_gam;
