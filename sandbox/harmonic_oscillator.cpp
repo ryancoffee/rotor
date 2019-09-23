@@ -14,24 +14,41 @@ int main(int argc, char* argv[]){
 	double start_time = 0.0;
 	double stop_time = 60.0;
 	double step_time = 1.1;
+	double gamma = 0.15;
 
-	harm_osc ho(0.15);
 	
 	if (argc > 1){
 		stop_time = double(atof(argv[1]));
 	}
+	if (argc > 2){
+		gamma = double(atof(argv[2]));
+	}
 
-	state_type x(2);
-	x[0] = 1.;
-	x[1] = 0.;
-	size_t steps = boost::numeric::odeint::integrate( ho , x , start_time , stop_time , step_time );
-	std::cout << "steps = " << steps << "\n" << std::flush;
+	harm_osc ho(gamma);
 
 	std::vector<state_type> x_vec;
 	std::vector<double> times;
 	size_t guessnsteps = int((stop_time-start_time)/step_time+1.);
 	x_vec.reserve(guessnsteps);
 	times.reserve(guessnsteps);
+
+	state_type x(2);
+	x[0] = 1.;
+	x[1] = 0.;
+	step_time = 10;
+	std::cout << "step_time = " << step_time << "\n" << std::flush;
+	size_t steps = boost::numeric::odeint::integrate( ho , x , start_time , stop_time , step_time , push_back_state_and_time( x_vec , times ) );
+	std::cout << "steps = " << steps << " with new step_time " << step_time << "\n" << std::flush;
+	std::string fname("./output.dat");
+	std::cout << "filename = " << fname << std::endl;
+	std::ofstream outfile;
+	outfile.open(fname.c_str(),std::ios::out);
+	for ( size_t i=0; i< x_vec.size(); ++i){
+		outfile << times[i] << "\t" << x_vec[i][0] << "\t" << x_vec[i][1] << "\n";
+	}
+	outfile << "\n" << std::flush;
+	outfile.close();
+
 
 	// define const stepper
 	boost::numeric::odeint::runge_kutta4< state_type > stepper;
@@ -47,7 +64,7 @@ int main(int argc, char* argv[]){
 
 	std::string filename("./ho_output.dat");
 	std::cout << "filename = " << filename << std::endl;
-	std::ofstream outfile(filename.c_str(),std::ios::out);
+	outfile.open(filename.c_str(),std::ios::out);
 	outfile << "#here is something?" << std::endl;
 	for(size_t i; i<x_vec.size(); ++i){
 	//	std::cout << times[i] << "\t" << x_vec[i][0] << "\t" << x_vec[i][1] << "\n";
@@ -69,7 +86,7 @@ int main(int argc, char* argv[]){
         newcontrolled_stepper_type newcontrolled_stepper;
 
 
-	charm_osc zho(0.15);
+	charm_osc zho(gamma);
 	cstate_type z(2);
 	z[0] = 1.+ 0.j;
 	z[1] = 0. + 1.j;

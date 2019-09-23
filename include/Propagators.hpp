@@ -30,10 +30,9 @@
 #include <jEnsemble.hpp>
 
 using std::complex_literals::operator""i;
-// seems the 
-namespace boost_blas = boost::numeric::ublas;
-typedef typename boost::numeric::ublas::vector< std::complex <double> > cvec_t;
-typedef typename boost::numeric::ublas::matrix< std::complex <double> > cmat_t;
+namespace boost_ublas = boost::numeric::ublas;
+typedef typename boost_ublas::vector< std::complex <double> > cvec_t;
+typedef typename boost_ublas::matrix< std::complex <double> > cmat_t;
 
 class jEnsemble;
 class PulseTime;
@@ -60,20 +59,20 @@ class jFreePropagator
 		double m_dt;
 };
 
+
 class jKickPropagator
 {
 	public:
 		jKickPropagator(jEnsemble & jens,const PulseTime & pulse);
-		jKickPropagator(jEnsemble & jens,const double & pulsetime)
+		jKickPropagator(jEnsemble & jens,const double & pulseduration)
 		~jKickPropagator();
 
 		inline bool apply(double &t, cvec_t &yin)
 		{
 			try {
-			boost_blas::hermitian_adaptor< cmat_t , boost_blas::lower> hal (Umat);
-			auto temp = boost_blas::prod(hal,yin);
-			yin = temp;
-			t += kickstepsize;
+				boost_ublas::hermitian_adaptor< cmat_t , boost_ublas::lower> hal (Umat);
+				yin = boost_ublas::prod(hal,yin);
+				t += kickstepsize;
 			} catch (std::exception &e) {
 				std::cerr << e.what() << "\n" << std::flush;
 				return false;
@@ -87,23 +86,29 @@ class jKickPropagator
 		size_t dim;
 		cmat_t Umat;
 		cvec_t m_state;
-		double t;
-		//boost_blas::vector_slice< boost_blas::vector <std::complex <double> > Uslice;
 
 		double kickstepsize;
 
-		std::vector< cvec_t > m_stateHistory;
-		std::vector< double > m_tHistory;
+		std::vector< cvec_t > state_History;
+		std::vector< double > t_History;
 
 		void printUmat();
 		void printcornerUmat();
 		void printcornerUmat_real();
 		void printcornerUmat_imag();
-		void sampleyPtr();
 };
 
 
 
+class Kicker 
+{
+	public:
+	Kicker(const jEnsemble &jens,const PulseTime &pulse)
+	void operator()(const cvec_t x, cvec_t xddt, const double t);
+	private:
+	size_t m_dim;
+
+}
 
 
 

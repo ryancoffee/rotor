@@ -50,8 +50,11 @@ public:
 	~jEnsemble(void);
 
 	inline int setm(const int min){m=min; return m;}
+	inline int getm(void){return m;}
 	inline size_t setv(const size_t vin){v=vin; return v;}
+	inline size_t getv(void){return v;}
 	inline double set_pthresh(const double th=0.05){m_pthresh = th;return m_pthresh;}
+	inline double get_pthresh(void){return m_pthresh;}
 
 	double getpop(void);
 	void normalize(void);
@@ -62,7 +65,6 @@ public:
 
 private:
 	double m_pthresh;
-	size_t m_realj;
 	size_t v;
 	int m;
 	size_t m_njs;
